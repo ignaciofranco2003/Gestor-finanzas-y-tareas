@@ -1,0 +1,62 @@
+body {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.title-bar {
+    background-color: #212529;
+    padding: 10px;
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.title-bar h1 {
+    margin: 0;
+}
+
+.cards {
+    width: 190px;
+    height: 254px;
+    background: rgb(236, 236, 236);
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    padding: 10px;
+}
+
+#cards-container{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    min-height: 80vh;
+}
+
+#cards-container a {
+    text-decoration: none;
+}
+
+.cards-text{
+    color: black;
+    font-weight: bold;
+    letter-spacing: 7px;
+    font-size: 1.5rem;
+    position: relative;
+    margin-bottom: 6px;
+}
+
+.cards-img{
+    width: 100%;
+    max-height: 190px;
+}
+
+/* Estilos específicos para el botón de logout */
+.logout-button {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
