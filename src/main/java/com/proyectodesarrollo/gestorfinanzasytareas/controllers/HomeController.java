@@ -31,8 +31,6 @@ public class HomeController {
                 return "admin_dashboard.html"; // Vista para administradores
             } else if (userRole.equals("ROLE_USER")) {
                 return "user_dashboard.html"; // Vista para usuarios normales
-            } else {
-                return "index.html"; // Redirigir a la página de inicio si el rol no coincide
             }
         }
 
