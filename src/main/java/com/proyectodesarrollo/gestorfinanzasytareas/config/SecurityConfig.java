@@ -7,11 +7,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.proyectodesarrollo.gestorfinanzasytareas.JWTconfig.JwtRequestFilter;
+import com.proyectodesarrollo.gestorfinanzasytareas.jwtconfig.JwtRequestFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -23,32 +22,27 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http
+                                .csrf().disable() // Desactivar CSRF
                                 .authorizeHttpRequests((authorize) -> authorize
-                                                .requestMatchers("/api/users/register").permitAll() // Permitir el
-                                                                                                    // registro sin
-                                                                                                    // autenticación
-                                                .anyRequest().authenticated() // Requerir autenticación para otras
-                                                                              // solicitudes
+                                                .requestMatchers("/api/users/register",
+                                                                "/recoverpassword",
+                                                                "/createuser")
+                                                .permitAll()
+                                                .anyRequest().authenticated() // Requerir autenticación para otros
+                                                                              // endpoints
                                 )
-                                .formLogin(login -> login.permitAll()) // Permitir el acceso a la página de inicio de
-                                                                       // sesión
-                                .logout(logout -> logout.logoutSuccessUrl("/")); // URL de éxito en el logout
-
-                // Añadir el filtro JWT antes del filtro de autenticación de Spring
-                http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                                .formLogin(formLogin -> formLogin
+                                                .loginPage("/login") // La URL del formulario de login personalizado
+                                                .permitAll() // Permitir acceso a todos a la página de login
+                                )
+                                // Añadir el filtro JWT después de la configuración de autorización
+                                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
         }
 
         @Bean
         public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-                return http.getSharedObject(AuthenticationManagerBuilder.class).build(); // Configurar y devolver
-                                                                                         // AuthenticationManager
-        }
-
-        @Bean
-        public WebSecurityCustomizer webSecurityCustomizer() {
-                return (web) -> web.ignoring().requestMatchers("/api/users/register"); // Ignorar autorización para
-                                                                                       // estas rutas
+                return http.getSharedObject(AuthenticationManagerBuilder.class).build();
         }
 }

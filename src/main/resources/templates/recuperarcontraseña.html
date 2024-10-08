@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Email</title>
+</head>
+<body>
+    <!-- Formulario para ingresar el email -->
+    <form id="emailForm" onsubmit="return sendEmailVerification(event)">
+        <label for="email">Ingresa tu email:</label>
+        <input type="email" id="email" required placeholder="Email">
+        <button type="submit">Enviar código</button>
+    </form>
+
+    <!-- Popup para ingresar el código de verificación -->
+    <div id="verificationPopup" style="display: none;">
+        <p>Se ha enviado un código de verificación a tu correo.</p>
+        <label for="verificationCode">Ingresa el código de verificación:</label>
+        <input type="text" id="verificationCode" maxlength="6" required placeholder="Código de 6 dígitos">
+        <button onclick="verifyCode()">Verificar código</button>
+        <button onclick="closePopup()">Cerrar</button>
+    </div>
+
+    <script>
+        // Función para enviar el email al backend
+        async function sendEmailVerification(event) {
+            event.preventDefault(); // Evitar que el formulario se envíe de manera tradicional
+
+            const email = document.getElementById('email').value;
+
+            try {
+                const response = await fetch('/api/verification/send-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                if (response.ok) {
+                    // Si el email existe y se envía el código, mostramos el popup
+                    alert('Código enviado exitosamente');
+                    document.getElementById('verificationPopup').style.display = 'block';
+                } else {
+                    // Si el email no existe
+                    const errorText = await response.text();
+                    alert(`Error: ${errorText}`);
+                }
+            } catch (error) {
+                console.error('Error al enviar el código:', error);
+                alert('Hubo un error al enviar el código');
+            }
+        }
+
+        // Función para verificar el código (aquí iría la lógica de comparación)
+        function verifyCode() {
+            const code = document.getElementById('verificationCode').value;
+            if (code.length !== 6) {
+                alert('El código debe tener 6 dígitos');
+            } else {
+                alert('Código verificado con éxito');
+                // Aquí podrías enviar el código al backend para validarlo si es necesario
+                // O continuar con el siguiente paso del proceso
+            }
+        }
+
+        // Función para cerrar el popup
+        function closePopup() {
+            document.getElementById('verificationPopup').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -9,6 +9,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
+    @GetMapping("/login")
+    public String login() {
+        return "login.html";
+    }
+
+    @GetMapping("/createuser")
+    public String createuser() {
+        return "crearusuario.html";
+    }
+
+    @GetMapping("/recoverpassword")
+    public String recoverpassword() {
+        return "recuperarcontraseña.html";
+    }
+
     @GetMapping("/") // Ruta para el inicio de sesión
     public String home() {
         // Obtener el contexto de seguridad

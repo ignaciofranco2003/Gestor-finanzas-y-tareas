@@ -1,4 +1,4 @@
-package com.proyectodesarrollo.gestorfinanzasytareas.JWTconfig;
+package com.proyectodesarrollo.gestorfinanzasytareas.jwtconfig;
 
 import java.io.IOException;
 

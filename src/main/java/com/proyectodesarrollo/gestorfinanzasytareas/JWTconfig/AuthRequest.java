@@ -1,10 +1,10 @@
-package com.proyectodesarrollo.gestorfinanzasytareas.JWTconfig;
+package com.proyectodesarrollo.gestorfinanzasytareas.jwtconfig;
 
 public class AuthRequest {
     private String email;
     private String password;
 
-    // Constructor vacío (requerido para deserialización)
+    // Constructor vacío
     public AuthRequest() {
     }
 

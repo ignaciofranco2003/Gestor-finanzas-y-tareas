@@ -31,26 +31,20 @@ public class UserController {
         }
     }
 
-    // @GetMapping("/{id}")
-    // public ResponseEntity<User> getUserById(@PathVariable Long id) {
-    // try {
-    // User user = userService.getUserById(id);
-    // if (user != null) {
-    // return new ResponseEntity<>(user, HttpStatus.OK);
-    // }
-    // return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    // } catch (Exception e) {
-    // return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    // }
-    // }
+    public static class EmailRequest {
+        private String email;
 
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-    // try {
-    // userService.deleteUser(id);
-    // return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    // } catch (Exception e) {
-    // return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    // }
-    // }
+        // Constructor
+        public EmailRequest() {
+        }
+
+        // Getter y Setter
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+    }
 }

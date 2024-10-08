@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "users") // Especificamos el nombre de la tabla si es necesario
+@Table(name = "users")
 public class User {
 
     @Id
@@ -29,6 +29,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Column(nullable = true)
+    private String verificationCode;
 
     public User() {
     }
@@ -67,5 +70,14 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    // Getter y Setter para el verificationCode
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
     }
 }

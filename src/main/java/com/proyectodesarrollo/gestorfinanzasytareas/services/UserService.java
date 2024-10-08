@@ -44,25 +44,14 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    // // Registrar un nuevo usuario
-    // public User registerUser(User user) {
-    // // Verificar si el correo ya está en uso
-    // if (getUserByEmail(user.getEmail()) != null) {
-    // throw new IllegalArgumentException("El correo ya está en uso.");
-    // }
-    // // Asignar el rol por defecto
-    // user.setRole(Role.USER); // Asignar el rol de usuario
-    // return saveUser(user); // Guardar el usuario en la base de datos
-    // }
-
     // Registrar un nuevo usuario
     public User registerUser(User user) {
-        // Verificar si el correo ya está en uso
         if (getUserByEmail(user.getEmail()) != null) {
             throw new IllegalArgumentException("El correo ya está en uso.");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword())); // Cifrar la contraseña
         user.setRole(Role.USER); // Asignar el rol de usuario
-        return saveUser(user); // Guardar el usuario en la base de datos
+        return saveUser(user);
     }
+
 }

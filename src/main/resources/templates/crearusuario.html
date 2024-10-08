@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style-crearusuario.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear usuario</title>
+</head>
+<body>
+    <div class="header">
+        <img class="logo" src="logo-pag.png" alt="">
+        <p>NOMBRE PAGINA</p>
+    </div>
+    <div class="main">
+        <div class="login">
+            <img class="email-logo" src="SOBRE.png" alt="">
+            <img class="user" src="user-plus.png" alt="">
+            <img class="candado-logo" src="candado.png" alt="">
+            <form id="registerForm" onsubmit="return registerUser(event)">
+                <input type="email" id="email" required placeholder="Email">
+                <input type="text" id="username" required placeholder="Usuario">
+                <input type="password" id="password" required placeholder="Contraseña">
+                <input type="password" id="confirmPassword" required placeholder="Confirmar Contraseña">
+                <div class="crear-usuario">
+                    <button type="submit" class="boton-crearusuario">CREAR USUARIO</button>
+                </div>
+            </form>
+            <div class="crear-usuario">
+                <p class="texto-global-inicio">Ya tengo un usuario | <a class="volver-a-inicio" href="login.html">Volver a inicio de sesión</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function registerUser(event) {
+            event.preventDefault(); // Evita que el formulario se envíe de la forma tradicional
+
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Verificar que las contraseñas coincidan
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden. Por favor, inténtelo de nuevo.');
+                return; // Detener la ejecución si no coinciden
+            }
+
+            const userData = {
+                email: email,
+                username: username,
+                password: password
+            };
+
+            try {
+                const response = await fetch('/api/users/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                if (response.ok) {
+                    alert('Usuario creado exitosamente');
+                    // Redirigir a la página de inicio de sesión
+                    window.location.href = '/login'; 
+                } else {
+                    const errorText = await response.text();
+                    alert(`Error: ${errorText}`);
+                }
+            } catch (error) {
+                console.error('Error al crear usuario:', error);
+                alert('Hubo un error al crear el usuario');
+            }
+        }
+    </script>
+</body>
+</html>
