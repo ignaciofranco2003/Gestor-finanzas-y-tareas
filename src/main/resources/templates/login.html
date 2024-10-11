@@ -1,35 +1,156 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
     <title>Login Page</title>
+
+    <!--Bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!--Iconos Bootstrap-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
-    <h2>Login</h2>
-    <form th:action="@{/login}" method="post">
-        <div>
-            <label for="username">Email:</label>
-            <input type="text" id="username" name="username" required>
+
+    <!--CSS ESTILOS-->
+    <style>
+        /*----------NAVBAR SECCION-----------*/
+        body {
+            /* background-image: url(imagenes/Fondo-remaster.jpeg); */
+            background-image: url(IMG/Fondo-remaster.jpeg);
+            background-size: contain;
+        }
+
+        .navbar{
+            background-color: #1BB521;
+            height: 70px;
+            opacity: 0.7;
+        }
+
+        .navbar i{
+            font-size: 35px;
+            color: black;
+        }
+
+        .nombre-web{
+            color: black;
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        /*---------LOGIN SECCION-----------*/
+        .login {
+            border-radius: 10px;
+            background-color: #8EC1E3;
+            flex-direction: column;
+            margin-top: 9.5rem;
+            padding: 4rem 1rem 2rem 0;
+            width: 35rem;
+            box-sizing: border-box;
+        }
+
+        /*----------INPUTS-----------*/
+        .input-group-text {
+            background-color: transparent;
+            border: none;
+            width: 40px;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        input {
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid black;
+            width: 17rem;
+        }
+
+        .logo i{
+            display: flex;
+            justify-content: center;
+            opacity: 0.7;
+            font-size: 20px;
+
+        }
+
+        input::placeholder {
+            font-size: 1.2rem;
+        }
+
+        .btn{
+            background-color: gray;
+            opacity: 0.7;
+            border: none;
+            margin-left: 1rem;
+        }
+
+        .btn:hover{
+            background-color: gray;
+            opacity: 1;
+            color: black;
+        }
+
+        .crear-usuario{
+            color: gray;
+        }
+        
+        a{
+            text-decoration: none;
+        }
+
+        p{
+            margin-left: 15.5px;
+        }
+        input:focus {
+            outline: none;
+            opacity: 0.8;
+        }
+    </style>
+
+    <!--Navbar-->
+    <nav class="container-fluid navbar d-flex justify-content-center align-items-center">
+        <i class="bi bi-activity"></i>
+        <p class="nombre-web ms-2">Nombre Pagina</p>
+    </nav>
+
+    <!--Contenedor Login-->
+    <form class="container login text-center d-flex flex-column align-items-center" th:action="@{/login}" method="post">
+        
+        <!--Email Input-->
+        <div class="input-group logo mb-4">
+            <span class="input-group-text">
+                <i class="bi bi-envelope-at"></i>
+            </span>
+            <input type="email" class="email-input" id="username" name="username" required placeholder="Email">
         </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+
+        <!--Contraseña Input-->
+        <div class="input-group logo mb-2">
+            <span class="input-group-text">
+                <i class="bi bi-lock"></i>
+            </span>
+            <input type="password" class="password-input" id="password" name="password" required placeholder="Contraseña">
         </div>
-        <div>
-            <button type="submit">Login</button>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">INICIAR SESION</button>
         </div>
-        <div class="crear-usuario">
-            <p class="texto-global">
-                Soy nuevo |
-                <a class="crear-usuario-boton" href="/createuser">Crear usuario</a>
+
+        <div class="crear-usuario mt-4">
+            <p>
+                Soy nuevo | <a href="/createuser">Crear usuario</a>
             </p>
-            <p class="texto-global-contraseña">
-                Olvidé mi contraseña |
-                <a class="cambiar-contraseña" href="/recoverpassword">Recuperar contraseña</a>
-                <!-- LOS HREF CAMBIARLO A LOS ENDPOINTS -->
+            <p>
+                Olvidé mi contraseña | <a href="solicitarcambio.html">Recuperar contraseña</a>
             </p>
         </div>
     </form>
-    <p th:if="${param.error}" style="color:red">Invalid username or password.</p>
-    <p th:if="${param.logout}" style="color:green">You have been logged out.</p>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
