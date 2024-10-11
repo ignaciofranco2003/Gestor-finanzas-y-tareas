@@ -26,7 +26,7 @@
                 </div>
             </form>
             <div class="crear-usuario">
-                <p class="texto-global-inicio">Ya tengo un usuario | <a class="volver-a-inicio" href="login.html">Volver a inicio de sesión</a></p>
+                <p class="texto-global-inicio">Ya tengo un usuario | <a class="volver-a-inicio" href="/login">Volver a inicio de sesión</a></p>
             </div>
         </div>
     </div>
@@ -46,6 +46,11 @@
                 return; // Detener la ejecución si no coinciden
             }
 
+            if (password.length < 4) {
+                alert('La contraseña debe tener al menos 4 caracteres.');
+                return;
+            }
+            
             const userData = {
                 email: email,
                 username: username,
