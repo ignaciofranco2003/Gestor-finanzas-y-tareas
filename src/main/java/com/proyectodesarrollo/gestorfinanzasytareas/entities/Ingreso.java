@@ -1,7 +1,6 @@
 package com.proyectodesarrollo.gestorfinanzasytareas.entities;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,8 +17,6 @@ public class Ingreso {
     private Long id;
 
     private BigDecimal monto;
-
-    private LocalDate fecha;
 
     @ManyToOne
     @JoinColumn(name = "cuenta_id")
@@ -42,14 +39,6 @@ public class Ingreso {
 
     public void setMonto(BigDecimal monto) {
         this.monto = monto;
-    }
-
-    public LocalDate getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
     }
 
     public Cuenta getCuenta() {

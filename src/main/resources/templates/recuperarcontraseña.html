@@ -30,7 +30,7 @@
             const email = document.getElementById('email').value;
 
             try {
-                const response = await fetch('/api/verification/send-code', {
+                const response = await fetch('/api/users/recoverpassword', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

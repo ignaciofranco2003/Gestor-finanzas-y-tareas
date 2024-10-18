@@ -31,7 +31,7 @@ public class HomeController {
 
         // Verificar si hay autenticación
         if (authentication != null && authentication.isAuthenticated()) {
-            // Obtener el primer rol del usuario
+            // Obtener el rol del usuario
             String userRole = authentication.getAuthorities().stream()
                     .findFirst() // Obtener el primer rol del usuario
                     .map(GrantedAuthority::getAuthority) // Obtener la autoridad como String

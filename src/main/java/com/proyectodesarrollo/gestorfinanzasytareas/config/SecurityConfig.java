@@ -24,7 +24,7 @@ public class SecurityConfig {
                 http
                                 .csrf().disable() // Desactivar CSRF
                                 .authorizeHttpRequests((authorize) -> authorize
-                                                .requestMatchers("/api/users/register",
+                                                .requestMatchers("/api/users/**",
                                                                 "/recoverpassword",
                                                                 "/createuser")
                                                 .permitAll()

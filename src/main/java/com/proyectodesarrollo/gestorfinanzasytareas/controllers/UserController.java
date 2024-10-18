@@ -31,6 +31,19 @@ public class UserController {
         }
     }
 
+    @PostMapping("/recoverpassword")
+    public ResponseEntity<String> recoverpassword(@RequestBody String email) {
+        try {
+
+            return new ResponseEntity<>("Usuario creado exitosamente", HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>("Correo electronico en uso", HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+
     public static class EmailRequest {
         private String email;
 
