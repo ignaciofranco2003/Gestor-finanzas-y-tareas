@@ -1,14 +1,9 @@
-package com.proyectodesarrollo.gestorfinanzasytareas.jwtconfig;
+package com.proyectodesarrollo.gestorfinanzasytareas.config.jwt.services.models.dtos;
 
-public class AuthRequest {
+public class LoginDTO {
     private String email;
     private String password;
 
-    // Constructor vacío
-    public AuthRequest() {
-    }
-
-    // Getters y Setters
     public String getEmail() {
         return email;
     }

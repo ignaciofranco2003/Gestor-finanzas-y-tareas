@@ -1,4 +1,4 @@
-package com.proyectodesarrollo.gestorfinanzasytareas.config;
+package com.proyectodesarrollo.gestorfinanzasytareas.config.jwt;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

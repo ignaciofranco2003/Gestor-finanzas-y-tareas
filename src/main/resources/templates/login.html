@@ -11,16 +11,16 @@
     <!--Iconos Bootstrap-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
-<body>
+
+<body style="background-image: url('../static/img/fondo-login.jpg'); background-size: contain;">
 
     <!--CSS ESTILOS-->
     <style>
-        /*----------NAVBAR SECCION-----------*/
+        /* ----------NAVBAR SECCION-----------
         body {
-            /* background-image: url(imagenes/Fondo-remaster.jpeg); */
-            background-image: url(IMG/Fondo-remaster.jpeg);
+            background-image: url(../static/img/fondo-login.jpg);
             background-size: contain;
-        }
+        } */
 
         .navbar{
             background-color: #1BB521;
@@ -154,3 +154,56 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Evita el envío del formulario
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // Variable para almacenar el token
+        let jwtToken;
+
+        // Función para manejar el login, guardar el token en la variable y recargar la página
+        fetch('/auth/authenticate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: username, password: password })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la autenticación');
+            }
+            return response.json(); // Obtener el token del JSON
+        })
+        .then(data => {
+            jwtToken = data.jwt; // Guardar el JWT en la variable
+            console.log('Token JWT recibido:', jwtToken);
+
+            // Recargar la página principal con el token en el header
+            fetch('/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`, // Agregar el token al header
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                if (res.ok) {
+                    window.location.reload(); // Recargar la página si está autorizado
+                } else {
+                    console.error('Error en la solicitud a la página principal');
+                }
+            })
+            .catch(error => {
+                console.error('Error al recargar la página principal:', error);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
