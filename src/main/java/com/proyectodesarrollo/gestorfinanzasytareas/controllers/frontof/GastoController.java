@@ -42,17 +42,7 @@ public class GastoController {
 
     @Autowired
     private JWTUtilityServiceImpl jwtUtilityService;
-
-    private boolean isUser(String token) {
-        try {
-            JWTClaimsSet claims = jwtUtilityService.parseJWT(token);
-            String userRole = claims.getStringClaim("role");
-            return "USER".equals(userRole);
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
+    
     private Optional<Cuenta> getCuentaFromToken(String token) {
         try {
             JWTClaimsSet claims = jwtUtilityService.parseJWT(token);
@@ -91,8 +81,8 @@ public class GastoController {
 
     @PostMapping("/create")
     public ResponseEntity<String> createGasto(@RequestBody Gasto gasto, HttpServletRequest request) {
-        String token = extractTokenFromRequest(request);
-        if (token != null && isUser(token)) {
+        String token = jwtUtilityService.extractTokenFromRequest(request);
+        if (token != null && jwtUtilityService.isUser(token)) {
             Optional<Cuenta> cuenta = getCuentaFromToken(token);
             if (cuenta.isPresent()) {
                 gasto.setCuenta(cuenta.get());
@@ -107,8 +97,8 @@ public class GastoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateGasto(@PathVariable Long id, @RequestBody Gasto gasto, HttpServletRequest request) {
-        String token = extractTokenFromRequest(request);
-        if (token != null && isUser(token)) {
+        String token = jwtUtilityService.extractTokenFromRequest(request);
+        if (token != null && jwtUtilityService.isUser(token)) {
             try {
                 Gasto gastoActualizado = gastoService.updateGasto(id, gasto);
                 return ResponseEntity.ok("Gasto ID " + gastoActualizado.getId() + " actualizado en la cuenta ID " + gastoActualizado.getCuenta().getId());
@@ -122,20 +112,12 @@ public class GastoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteGasto(@PathVariable Long id, HttpServletRequest request) {
-        String token = extractTokenFromRequest(request);
-        if (token != null && isUser(token)) {
+        String token = jwtUtilityService.extractTokenFromRequest(request);
+        if (token != null && jwtUtilityService.isUser(token)) {
             gastoService.deleteGasto(id);
             return ResponseEntity.ok("Gasto ID " + id + " eliminado");
         } else {
             return ResponseEntity.status(403).build();
         }
-    }
-
-    private String extractTokenFromRequest(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
-            return null;
-        }
-        return header.substring(7);
     }
 }

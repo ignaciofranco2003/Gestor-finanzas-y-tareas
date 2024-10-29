@@ -129,9 +129,16 @@ public class TareaController {
 
     private String extractTokenFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
-            return null;
+        System.out.println("Header Authorization: " + header); // Verifica el valor recibido
+        if (header == null) {
+            return null; // No se proporciona encabezado
         }
-        return header.substring(7);
+
+        if (header.startsWith("Bearer ")) {
+            return header.substring(7); // Extrae el token sin "Bearer "
+        } else {
+            // Aquí asumimos que se proporciona la API Key directamente
+            return header; // Retorna la API Key directamente
+        }
     }
 }

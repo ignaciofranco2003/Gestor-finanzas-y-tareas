@@ -87,12 +87,18 @@ public class CategoriaIngresoController {
         }
     }
 
-    // Método auxiliar para extraer el token del encabezado
     private String extractTokenFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
-            return null;
+        System.out.println("Header Authorization: " + header); // Verifica el valor recibido
+        if (header == null) {
+            return null; // No se proporciona encabezado
         }
-        return header.substring(7); // Extraer el token sin "Bearer "
+
+        if (header.startsWith("Bearer ")) {
+            return header.substring(7); // Extrae el token sin "Bearer "
+        } else {
+            //sumimos que se proporciona la API Key directamente
+            return header; // Retorna la API Key directamente
+        }
     }
 }

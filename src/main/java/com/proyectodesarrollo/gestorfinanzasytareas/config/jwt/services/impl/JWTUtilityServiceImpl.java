@@ -15,7 +15,9 @@ import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,11 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.proyectodesarrollo.gestorfinanzasytareas.config.jwt.services.IJWTUtilityService;
+import com.proyectodesarrollo.gestorfinanzasytareas.entities.Cuenta;
 import com.proyectodesarrollo.gestorfinanzasytareas.entities.Role;
+import com.proyectodesarrollo.gestorfinanzasytareas.services.CuentaService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JWTUtilityServiceImpl implements IJWTUtilityService {
@@ -41,11 +47,19 @@ public class JWTUtilityServiceImpl implements IJWTUtilityService {
     @Value("classpath:jwtKeys/public_key.pem")
     private Resource publicKeyResource;
 
+    @Autowired
+    private JWTUtilityServiceImpl jwtUtilityService;
+    
+    @Autowired
+    private CuentaService cuentaService;
+    
     @Override
     public String generateJWT(Long userId,String name, Role role, String email) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, JOSEException {
         PrivateKey privateKey = loadPrivateKey(privateKeyResource);
 
         JWSSigner signer = new RSASSASigner(privateKey);
+
+        Optional<Cuenta> cuenta = cuentaService.findByUserId(userId);
 
         Date now = new Date();
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
@@ -54,6 +68,7 @@ public class JWTUtilityServiceImpl implements IJWTUtilityService {
                 .claim("name", name) // Agregar el nombre
                 .claim("role", role) // Agregar el rol
                 .claim("email", email) // Agregar el email
+                .claim("IDcuenta", cuenta.get().getId()) // Agregar el email
                 .issueTime(now)
                 .expirationTime(new Date(now.getTime() + 3600000)) // token expirará después de 1 hora
                 .build();
@@ -82,6 +97,42 @@ public class JWTUtilityServiceImpl implements IJWTUtilityService {
 
         return claimsSet;
     }
+
+        public String extractTokenFromRequest(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        System.out.println("Header Authorization: " + header); // Verifica el valor recibido
+        if (header == null) {
+            return null; // No se proporciona encabezado
+        }
+
+        if (header.startsWith("Bearer ")) {
+            return header.substring(7); // Extrae el token sin "Bearer "
+        } else {
+            // asumimos que se proporciona la API Key directamente
+            return header; // Retorna la API Key directamente
+        }
+    }
+
+    public boolean isAdmin(String token) {
+        try {
+            JWTClaimsSet claims = jwtUtilityService.parseJWT(token);
+            String userRole = claims.getStringClaim("role");
+            return "ADMIN".equals(userRole); // Verificar si el rol es ADMIN
+        } catch (Exception e) {
+            return false; // Si hay error al validar el token, no es administrador
+        }
+    }
+
+    public boolean isUser(String token) {
+        try {
+            JWTClaimsSet claims = jwtUtilityService.parseJWT(token);
+            String userRole = claims.getStringClaim("role");
+            return "USER".equals(userRole);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 
     private PrivateKey loadPrivateKey(Resource resource) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException {
         byte[] keyBytes = Files.readAllBytes(Paths.get(resource.getURI()));

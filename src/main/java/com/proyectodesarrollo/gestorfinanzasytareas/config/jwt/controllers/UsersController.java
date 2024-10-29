@@ -14,7 +14,7 @@ import com.proyectodesarrollo.gestorfinanzasytareas.entities.User;
 
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class UsersController {
 
     @Autowired
     IUserService userService;

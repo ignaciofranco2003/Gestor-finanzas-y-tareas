@@ -24,9 +24,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("Usuario no encontrado: " + email);
         }
+        
+            // Suponiendo que el método getName() devuelve el nombre del rol como String
+        String roleName = user.getRole().getName(); // Cambia esto según la implementación de tu clase Role
+
+        System.out.println(roleName);
 
         // Crear la lista de autoridades usando el rol del usuario
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" +roleName));
+
+        System.out.println(authorities);
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),

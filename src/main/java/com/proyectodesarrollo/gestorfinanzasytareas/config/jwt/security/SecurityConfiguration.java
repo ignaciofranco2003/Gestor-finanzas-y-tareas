@@ -12,7 +12,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.proyectodesarrollo.gestorfinanzasytareas.config.jwt.services.IJWTUtilityService;
 import com.proyectodesarrollo.gestorfinanzasytareas.config.jwt.services.impl.JWTUtilityServiceImpl;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,8 +20,12 @@ import jakarta.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
+
+        // @Autowired
+        // private IJWTUtilityService jwtUtilityService;
+
         @Autowired
-        private IJWTUtilityService jwtUtilityService;
+        private JWTUtilityServiceImpl jwtUtilityService;
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -31,17 +34,18 @@ public class SecurityConfiguration {
                                 csrf.disable())
                         .authorizeHttpRequests(authRequest ->
                                 authRequest
-                                        .requestMatchers("/","/auth/**","/api/users/**","/recoverpassword","/createuser","/backof/categorias-gasto/all","/backof/categorias-ingreso/all").permitAll()
-                                        .anyRequest().authenticated()
+                                        .requestMatchers("/css/**","/js/**","/","/home-admin","/home-usuario","/auth/**","/api/users/**","/recoverpassword","/createuser","/backof/categorias-gasto/all","/backof/categorias-ingreso/all").permitAll()
+                                        // .anyRequest().authenticated()
                         )
                         .formLogin(formLogin -> formLogin
                                 .loginPage("/login") // La URL del formulario de login personalizado
                                 .permitAll() // Permitir acceso a todos a la página de login
-                        )
+                        ) 
                         .sessionManagement(sessionManager ->
                                 sessionManager
                                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .addFilterBefore(new JWTAuthorizationFilter((JWTUtilityServiceImpl) jwtUtilityService), UsernamePasswordAuthenticationFilter.class)
+                        // .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                         .exceptionHandling(exceptionHandling ->
                                 exceptionHandling
                                         .authenticationEntryPoint((request, response, authException) -> {
@@ -54,4 +58,10 @@ public class SecurityConfiguration {
         public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
                 return http.getSharedObject(AuthenticationManagerBuilder.class).build();
         }
+
+        @Bean
+        public JWTAuthorizationFilter jwtAuthorizationFilter() {
+                return new JWTAuthorizationFilter(jwtUtilityService);
+        }
 }
+
