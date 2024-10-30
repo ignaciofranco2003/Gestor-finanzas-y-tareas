@@ -25,6 +25,10 @@ public class GastoService {
         return gastoRepository.findById(id);
     }
 
+    public List<Gasto> getGastosByCuentaId(Long cuentaId) {
+        return gastoRepository.findByCuenta_Id(cuentaId);
+    }
+
     // Crear un nuevo gasto
     public Gasto createGasto(Gasto gasto) {
         return gastoRepository.save(gasto);

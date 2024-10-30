@@ -25,6 +25,10 @@ public class IngresoService {
         return ingresoRepository.findById(id);
     }
 
+    public List<Ingreso> getIngresosByCuentaId(Long cuentaId) {
+        return ingresoRepository.findByCuenta_Id(cuentaId);
+    }
+
     // Crear un nuevo ingreso
     public Ingreso createIngreso(Ingreso ingreso) {
         return ingresoRepository.save(ingreso);

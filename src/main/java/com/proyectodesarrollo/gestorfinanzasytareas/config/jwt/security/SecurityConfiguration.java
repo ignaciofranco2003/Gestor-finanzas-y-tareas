@@ -35,7 +35,7 @@ public class SecurityConfiguration {
                         .authorizeHttpRequests(authRequest ->
                                 authRequest
                                         .requestMatchers("/css/**","/js/**","/","/home-admin","/home-usuario","/auth/**","/api/users/**","/recoverpassword","/createuser","/backof/categorias-gasto/all","/backof/categorias-ingreso/all").permitAll()
-                                        // .anyRequest().authenticated()
+                                        .anyRequest().authenticated()
                         )
                         .formLogin(formLogin -> formLogin
                                 .loginPage("/login") // La URL del formulario de login personalizado
@@ -45,7 +45,6 @@ public class SecurityConfiguration {
                                 sessionManager
                                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .addFilterBefore(new JWTAuthorizationFilter((JWTUtilityServiceImpl) jwtUtilityService), UsernamePasswordAuthenticationFilter.class)
-                        // .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                         .exceptionHandling(exceptionHandling ->
                                 exceptionHandling
                                         .authenticationEntryPoint((request, response, authException) -> {

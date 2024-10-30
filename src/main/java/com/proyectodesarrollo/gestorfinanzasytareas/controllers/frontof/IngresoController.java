@@ -76,6 +76,17 @@ public class IngresoController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/cuenta/{cuentaId}")
+    public ResponseEntity<List<IngresoDTO>> getIngresosByCuentaId(@PathVariable Long cuentaId) {
+        List<Ingreso> ingresos = ingresoService.getIngresosByCuentaId(cuentaId);
+        List<IngresoDTO> response = ingresos.stream().map(ingreso -> {
+            Long categoriaId = ingreso.getCategoria() != null ? ingreso.getCategoria().getId() : null;
+            return new IngresoDTO(ingreso.getId(), ingreso.getMonto(), cuentaId, categoriaId);
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<IngresoDTO> getIngresoById(@PathVariable Long id) {
         Optional<Ingreso> ingreso = ingresoService.getIngresoById(id);

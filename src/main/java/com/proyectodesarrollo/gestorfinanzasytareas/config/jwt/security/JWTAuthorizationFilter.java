@@ -1,8 +1,6 @@
 package com.proyectodesarrollo.gestorfinanzasytareas.config.jwt.security;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.util.Collections;
 
@@ -58,12 +56,11 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     claims.getSubject(), null, Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        } catch (JOSEException | ParseException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (JOSEException | ParseException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Unauthorized: Token invalid or not recognized");
             return;
         }
-
         // Continuar con la cadena de filtros
         filterChain.doFilter(request, response);
     }

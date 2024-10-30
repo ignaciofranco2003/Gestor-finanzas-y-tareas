@@ -79,6 +79,17 @@ public class GastoController {
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/cuenta/{cuentaId}")
+    public ResponseEntity<List<GastoDTO>> getGastosByCuentaId(@PathVariable Long cuentaId) {
+        List<Gasto> gastos = gastoService.getGastosByCuentaId(cuentaId);
+        List<GastoDTO> response = gastos.stream().map(g -> {
+            Long categoriaId = g.getCategoria() != null ? g.getCategoria().getId() : null;
+            return new GastoDTO(g.getId(), g.getMonto(), g.getFecha(), cuentaId, categoriaId);
+        }).toList();
+        return ResponseEntity.ok(response);
+    }
+
+
     @PostMapping("/create")
     public ResponseEntity<String> createGasto(@RequestBody Gasto gasto, HttpServletRequest request) {
         String token = jwtUtilityService.extractTokenFromRequest(request);

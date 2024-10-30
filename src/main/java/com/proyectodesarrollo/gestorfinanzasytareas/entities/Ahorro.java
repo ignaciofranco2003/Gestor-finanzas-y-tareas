@@ -1,7 +1,6 @@
 package com.proyectodesarrollo.gestorfinanzasytareas.entities;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,10 +16,9 @@ public class Ahorro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String objetivo;
-    private BigDecimal progreso;
-    private BigDecimal meta;
-    private LocalDate fechaObjetivo;
+    private String nombreAhorro;
+    private BigDecimal montoActual;
+    private BigDecimal montoFinal;
 
     @ManyToOne
     @JoinColumn(name = "cuenta_id")
@@ -33,36 +31,28 @@ public class Ahorro {
         return id;
     }
 
-    public String getObjetivo() {
-        return objetivo;
+    public String getNombreAhorro() {
+        return nombreAhorro;
     }
 
-    public void setObjetivo(String objetivo) {
-        this.objetivo = objetivo;
+    public void setNombreAhorro(String nombreAhorro) {
+        this.nombreAhorro = nombreAhorro;
     }
 
-    public BigDecimal getProgreso() {
-        return progreso;
+    public BigDecimal getMontoActual() {
+        return montoActual;
     }
 
-    public void setProgreso(BigDecimal progreso) {
-        this.progreso = progreso;
+    public void setMontoActual(BigDecimal montoActual) {
+        this.montoActual = montoActual;
     }
 
-    public BigDecimal getMeta() {
-        return meta;
+    public BigDecimal getMontoFinal() {
+        return montoFinal;
     }
 
-    public void setMeta(BigDecimal meta) {
-        this.meta = meta;
-    }
-
-    public LocalDate getFechaObjetivo() {
-        return fechaObjetivo;
-    }
-
-    public void setFechaObjetivo(LocalDate fechaObjetivo) {
-        this.fechaObjetivo = fechaObjetivo;
+    public void setMontoFinal(BigDecimal montoFinal) {
+        this.montoFinal = montoFinal;
     }
 
     public Cuenta getCuenta() {
