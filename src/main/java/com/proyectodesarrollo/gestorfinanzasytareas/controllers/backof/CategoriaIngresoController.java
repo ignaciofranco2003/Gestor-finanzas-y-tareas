@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,37 +54,56 @@ public class CategoriaIngresoController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoriaIngreso> createCategoria(@RequestBody CategoriaIngreso categoriaIngreso, HttpServletRequest request) {
+    public ResponseEntity<String> createCategoria(@RequestBody CategoriaIngreso categoriaIngreso, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
         if (token != null && isAdmin(token)) {
-            return ResponseEntity.ok(categoriaIngresoService.createCategoria(categoriaIngreso));
+            try {
+                categoriaIngresoService.createCategoria(categoriaIngreso);
+                return ResponseEntity.ok("Categoría creada exitosamente");
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Ya existe una categoria con ese nombre");
+            }
         } else {
-            return ResponseEntity.status(403).build(); // Forbidden
+            return ResponseEntity.status(403).build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaIngreso> updateCategoria(@PathVariable Long id, @RequestBody CategoriaIngreso categoriaIngreso, HttpServletRequest request) {
+    public ResponseEntity<String> updateCategoria(@PathVariable Long id, @RequestBody CategoriaIngreso categoriaIngreso, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
+        // Verificar si el token existe y si el usuario tiene permisos de administrador
         if (token != null && isAdmin(token)) {
             try {
-                return ResponseEntity.ok(categoriaIngresoService.updateCategoria(id, categoriaIngreso));
+                // Intentar actualizar la categoría
+                categoriaIngresoService.updateCategoria(id, categoriaIngreso);
+                return ResponseEntity.ok("Modificado con éxito");
+    
+            } catch (IllegalArgumentException e) {
+                // Captura el caso de nombre duplicado con diferente ID
+                return ResponseEntity.badRequest().body("Ya existe otra categoría con ese nombre");
+    
             } catch (RuntimeException e) {
-                return ResponseEntity.notFound().build();
+                // Captura el caso de categoría no encontrada
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Categoría no encontrada");
             }
         } else {
-            return ResponseEntity.status(403).build(); // Forbidden
+            // Respuesta 403 Forbidden si el usuario no es admin
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para realizar esta acción");
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategoria(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<String> deleteCategoria(@PathVariable Long id, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
         if (token != null && isAdmin(token)) {
-            categoriaIngresoService.deleteCategoria(id);
-            return ResponseEntity.noContent().build();
+            try {
+                categoriaIngresoService.deleteCategoria(id);
+                return ResponseEntity.ok("Categoria eliminada");
+            } catch (RuntimeException e) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La categoría no existe.");
+            }
         } else {
-            return ResponseEntity.status(403).build(); // Forbidden
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No se pudo eliminar la categoría");
         }
     }
 

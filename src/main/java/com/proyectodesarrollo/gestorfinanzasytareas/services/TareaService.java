@@ -31,7 +31,6 @@ public class TareaService {
     public Tarea updateTarea(Long id, Tarea tareaActualizada) {
         return tareaRepository.findById(id)
                 .map(tarea -> {
-                    tarea.setTitulo(tareaActualizada.getTitulo());
                     tarea.setDescripcion(tareaActualizada.getDescripcion());
                     tarea.setCompletada(tareaActualizada.isCompletada());
                     tarea.setCuenta(tareaActualizada.getCuenta());
@@ -45,4 +44,9 @@ public class TareaService {
         }
         tareaRepository.deleteById(id);
     }
+
+    public List<Tarea> getTareasByCuentaId(Long cuentaId) {
+        return tareaRepository.findByCuentaId(cuentaId);
+    }
+
 }

@@ -38,6 +38,7 @@ public class AhorroService {
                     ahorro.setMontoActual(ahorroActualizado.getMontoActual());
                     ahorro.setMontoFinal(ahorroActualizado.getMontoFinal());
                     ahorro.setCuenta(ahorroActualizado.getCuenta());
+                    ahorro.setCompletado(ahorroActualizado.isCompletado());
                     return ahorroRepository.save(ahorro);
                 }).orElseThrow(() -> new RuntimeException("Ahorro no encontrado"));
     }

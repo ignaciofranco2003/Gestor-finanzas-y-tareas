@@ -26,29 +26,44 @@ public class UserRestController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
         try {
+            if (!isPasswordValid(user.getPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La contraseña debe tener entre 4 y 16 caracteres.");
+            }
+            
+            if (!isUsernameValid(user.getUsername())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario debe tener entre 4 y 20 caracteres.");
+            }
+            
+            if (!isEmailValid(user.getEmail())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Formato de correo electrónico inválido.");
+            }
+            
             userService.registerUser(user);
             Cuenta cuenta = new Cuenta();
             cuenta.setUsuario(user);
             cuenta.setNombre("Cuenta de " + user.getUsername());
             cuentaService.createCuenta(cuenta);
             return new ResponseEntity<>("Usuario y cuenta creados exitosamente", HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>("Correo electronico en uso", HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/recoverpassword")
-    public ResponseEntity<String> recoverpassword(@RequestBody String email) {
-        try {
             
-            return new ResponseEntity<>("Usuario creado exitosamente", HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>("Correo electronico en uso", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("Correo electrónico en uso", HttpStatus.CONFLICT);
         } catch (Exception e) {
-            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    
+    // Método para validar la contraseña
+    private boolean isPasswordValid(String password) {
+        return password != null && password.length() >= 4 && password.length() <= 16;
+    }
+    
+    // Método para validar el nombre de usuario
+    private boolean isUsernameValid(String username) {
+        return username != null && username.length() >= 4 && username.length() <= 20;
+    }
+    
+    // Método para validar el formato del correo electrónico
+    private boolean isEmailValid(String email) {
+        return email != null && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-zA-Z0-9]{2,}$");
+    }
 }

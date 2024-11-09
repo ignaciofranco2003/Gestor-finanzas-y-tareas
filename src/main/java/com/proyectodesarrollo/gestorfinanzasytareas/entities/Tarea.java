@@ -14,7 +14,6 @@ public class Tarea {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String titulo;
     private String descripcion;
     private boolean completada;
 
@@ -31,15 +30,6 @@ public class Tarea {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
     }
 
     public String getDescripcion() {

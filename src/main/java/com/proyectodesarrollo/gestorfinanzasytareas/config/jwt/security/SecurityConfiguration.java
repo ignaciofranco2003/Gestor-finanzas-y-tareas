@@ -34,7 +34,7 @@ public class SecurityConfiguration {
                                 csrf.disable())
                         .authorizeHttpRequests(authRequest ->
                                 authRequest
-                                        .requestMatchers("/css/**","/js/**","/","/home-admin","/home-usuario","/auth/**","/api/users/**","/recoverpassword","/createuser","/backof/categorias-gasto/all","/backof/categorias-ingreso/all").permitAll()
+                                        .requestMatchers("/css/**","/js/**","/","/home-admin","/home-usuario","/auth/**","/api/users/**","/recoverpassword/**","/createuser","/backof/categorias-gasto/all","/backof/categorias-ingreso/all").permitAll()
                                         .anyRequest().authenticated()
                         )
                         .formLogin(formLogin -> formLogin

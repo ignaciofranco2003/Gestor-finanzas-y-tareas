@@ -69,8 +69,18 @@ public class TareaController {
         List<Tarea> tareas = tareaService.getAllTareas();
         List<TareaDTO> response = tareas.stream().map(tarea -> {
             Long cuentaId = tarea.getCuenta() != null ? tarea.getCuenta().getId() : null;
-            return new TareaDTO(tarea.getId(), tarea.getTitulo(), tarea.getDescripcion(), tarea.isCompletada(), cuentaId);
+            return new TareaDTO(tarea.getId(), tarea.getDescripcion(), tarea.isCompletada(), cuentaId);
         }).collect(Collectors.toList());
+        
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/cuenta/{cuentaId}")
+    public ResponseEntity<List<TareaDTO>> getTareasByCuentaId(@PathVariable Long cuentaId) {
+        List<Tarea> tareas = tareaService.getTareasByCuentaId(cuentaId);
+        List<TareaDTO> response = tareas.stream().map(tarea -> 
+            new TareaDTO(tarea.getId(), tarea.getDescripcion(), tarea.isCompletada(), cuentaId)
+        ).collect(Collectors.toList());
         
         return ResponseEntity.ok(response);
     }
@@ -80,7 +90,7 @@ public class TareaController {
         Optional<Tarea> tarea = tareaService.getTareaById(id);
         return tarea.map(t -> {
             Long cuentaId = t.getCuenta() != null ? t.getCuenta().getId() : null;
-            TareaDTO response = new TareaDTO(t.getId(), t.getTitulo(), t.getDescripcion(), t.isCompletada(), cuentaId);
+            TareaDTO response = new TareaDTO(t.getId(), t.getDescripcion(), t.isCompletada(), cuentaId);
             return ResponseEntity.ok(response);
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }

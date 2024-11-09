@@ -40,6 +40,15 @@ public class CategoriaGastoService {
     public CategoriaGasto updateCategoria(Long id, CategoriaGasto categoriaDetails) {
         return categoriaGastoRepository.findById(id)
             .map(categoria -> {
+                // Verificar si existe otra categoría con el mismo nombre y diferente ID
+                boolean exists = categoriaGastoRepository.findAll().stream()
+                    .anyMatch(c -> c.getNombre().equalsIgnoreCase(categoriaDetails.getNombre()) && !c.getId().equals(id));
+    
+                if (exists) {
+                    throw new IllegalArgumentException("Ya existe otra categoría con ese nombre");
+                }
+    
+                // Si no existe duplicado, actualizar el nombre de la categoría
                 categoria.setNombre(categoriaDetails.getNombre());
                 return categoriaGastoRepository.save(categoria);
             }).orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
@@ -47,6 +56,10 @@ public class CategoriaGastoService {
 
     // Eliminar una categoría de gasto por ID
     public void deleteCategoria(Long id) {
-        categoriaGastoRepository.deleteById(id);
+        if (categoriaGastoRepository.existsById(id)) {
+            categoriaGastoRepository.deleteById(id);
+        }else{
+            throw new RuntimeException("La categoría no existe.");
+        }
     }
 }

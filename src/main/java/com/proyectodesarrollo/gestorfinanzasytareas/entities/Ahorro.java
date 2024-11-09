@@ -20,6 +20,8 @@ public class Ahorro {
     private BigDecimal montoActual;
     private BigDecimal montoFinal;
 
+    private boolean completado;
+
     @ManyToOne
     @JoinColumn(name = "cuenta_id")
     private Cuenta cuenta;
@@ -62,4 +64,13 @@ public class Ahorro {
     public void setCuenta(Cuenta cuenta) {
         this.cuenta = cuenta;
     }
+
+    public boolean isCompletado() {
+        return completado;
+    }
+
+    public void setCompletado(boolean completado) {
+        this.completado = completado;
+    }
+
 }

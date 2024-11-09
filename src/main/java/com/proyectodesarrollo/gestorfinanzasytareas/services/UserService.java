@@ -47,6 +47,7 @@ public class UserService {
     // Registrar un nuevo usuario
     public User registerUser(User user) {
         if (getUserByEmail(user.getEmail()) != null) {
+            System.out.println(getUserByEmail(user.getEmail()));
             throw new IllegalArgumentException("El correo ya está en uso.");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword())); // Cifrar la contraseña

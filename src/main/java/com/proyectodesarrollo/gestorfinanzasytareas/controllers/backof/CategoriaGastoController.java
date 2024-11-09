@@ -74,28 +74,43 @@ public class CategoriaGastoController {
 
     // Actualizar una categoría de gasto existente
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaGasto> updateCategoria(@PathVariable Long id, @RequestBody CategoriaGasto categoriaGasto, HttpServletRequest request) {
+    public ResponseEntity<String> updateCategoria(@PathVariable Long id, @RequestBody CategoriaGasto categoriaGasto, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
+
+        // Verificar si el token existe y si el usuario tiene permisos de administrador
         if (token != null && isAdmin(token)) {
             try {
-                return ResponseEntity.ok(categoriaGastoService.updateCategoria(id, categoriaGasto));
+                // Llama al servicio para actualizar la categoría
+                categoriaGastoService.updateCategoria(id, categoriaGasto);
+                return ResponseEntity.ok("Modificado con éxito");
+
+            } catch (IllegalArgumentException e) {
+                // Captura el caso de nombre duplicado con diferente ID
+                return ResponseEntity.badRequest().body("Ya existe otra categoría con ese nombre");
+
             } catch (RuntimeException e) {
-                return ResponseEntity.notFound().build();
+                // Captura el caso de categoría no encontrada
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Categoría no encontrada");
             }
         } else {
-            return ResponseEntity.status(403).build(); // Forbidden
+            // Respuesta 403 Forbidden si el usuario no es admin
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para realizar esta acción");
         }
     }
 
     // Eliminar una categoría de gasto por ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategoria(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<String> deleteCategoria(@PathVariable Long id, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
         if (token != null && isAdmin(token)) {
-            categoriaGastoService.deleteCategoria(id);
-            return ResponseEntity.noContent().build();
+            try {
+                categoriaGastoService.deleteCategoria(id);
+                return ResponseEntity.ok("Categoria eliminada");
+            } catch (RuntimeException e) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La categoría no existe.");
+            }
         } else {
-            return ResponseEntity.status(403).build(); // Forbidden
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No se pudo eliminar la categoría");
         }
     }
 
