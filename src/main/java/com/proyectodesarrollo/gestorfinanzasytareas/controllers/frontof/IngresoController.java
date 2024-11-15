@@ -1,10 +1,13 @@
 package com.proyectodesarrollo.gestorfinanzasytareas.controllers.frontof;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,8 +67,97 @@ public class IngresoController {
         }
     }
 
+    // @GetMapping("/all")
+    // public ResponseEntity<List<IngresoDTO>> getAllIngresos() {
+    // List<Ingreso> ingresos = ingresoService.getAllIngresos();
+    // List<IngresoDTO> response = ingresos.stream().map(ingreso -> {
+    // Long cuentaId = ingreso.getCuenta() != null ? ingreso.getCuenta().getId() :
+    // null;
+    // Long categoriaId = ingreso.getCategoria() != null ?
+    // ingreso.getCategoria().getId() : null;
+    // return new IngresoDTO(ingreso.getId(), ingreso.getMonto(), cuentaId,
+    // categoriaId);
+    // }).collect(Collectors.toList());
+
+    // return ResponseEntity.ok(response);
+    // }
+
+    // @GetMapping("/cuenta/{cuentaId}")
+    // public ResponseEntity<List<IngresoDTO>> getIngresosByCuentaId(@PathVariable
+    // Long cuentaId) {
+    // List<Ingreso> ingresos = ingresoService.getIngresosByCuentaId(cuentaId);
+    // List<IngresoDTO> response = ingresos.stream().map(ingreso -> {
+    // Long categoriaId = ingreso.getCategoria() != null ?
+    // ingreso.getCategoria().getId() : null;
+    // return new IngresoDTO(ingreso.getId(), ingreso.getMonto(), cuentaId,
+    // categoriaId);
+    // }).collect(Collectors.toList());
+
+    // return ResponseEntity.ok(response);
+    // }
+
+    // @GetMapping("/{id}")
+    // public ResponseEntity<IngresoDTO> getIngresoById(@PathVariable Long id) {
+    // Optional<Ingreso> ingreso = ingresoService.getIngresoById(id);
+    // return ingreso.map(i -> {
+    // Long cuentaId = i.getCuenta() != null ? i.getCuenta().getId() : null;
+    // Long categoriaId = i.getCategoria() != null ? i.getCategoria().getId() :
+    // null;
+    // IngresoDTO response = new IngresoDTO(i.getId(), i.getMonto(), cuentaId,
+    // categoriaId);
+    // return ResponseEntity.ok(response);
+    // }).orElseGet(() -> ResponseEntity.notFound().build());
+    // }
+
+    // @PostMapping("/create")
+    // public ResponseEntity<String> createIngreso(@RequestBody Ingreso ingreso,
+    // HttpServletRequest request) {
+    // String token = extractTokenFromRequest(request);
+    // if (token != null && isUser(token)) {
+    // Optional<Cuenta> cuenta = getCuentaFromToken(token);
+    // if (cuenta.isPresent()) {
+    // ingreso.setCuenta(cuenta.get());
+    // Ingreso nuevaIngreso = ingresoService.createIngreso(ingreso);
+    // return ResponseEntity.ok("Ingreso agregado a la cuenta ID " +
+    // nuevaIngreso.getCuenta().getId());
+    // }
+    // return ResponseEntity.status(404).build();
+    // } else {
+    // return ResponseEntity.status(403).build();
+    // }
+    // }
+
+    // @PutMapping("/{id}")
+    // public ResponseEntity<String> updateIngreso(@PathVariable Long id,
+    // @RequestBody Ingreso ingreso, HttpServletRequest request) {
+    // String token = extractTokenFromRequest(request);
+    // if (token != null && isUser(token)) {
+    // try {
+    // Ingreso ingresoActualizado = ingresoService.updateIngreso(id, ingreso);
+    // return ResponseEntity.ok("Ingreso ID " + ingresoActualizado.getId() + "
+    // actualizado en la cuenta ID " + ingresoActualizado.getCuenta().getId());
+    // } catch (RuntimeException e) {
+    // return ResponseEntity.notFound().build();
+    // }
+    // } else {
+    // return ResponseEntity.status(403).build();
+    // }
+    // }
+
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<String> deleteIngreso(@PathVariable Long id,
+    // HttpServletRequest request) {
+    // String token = extractTokenFromRequest(request);
+    // if (token != null && isUser(token)) {
+    // ingresoService.deleteIngreso(id);
+    // return ResponseEntity.ok("Ingreso ID " + id + " eliminado");
+    // } else {
+    // return ResponseEntity.status(403).build();
+    // }
+    // }
+
     @GetMapping("/all")
-    public ResponseEntity<List<IngresoDTO>> getAllIngresos() {
+    public ResponseEntity<Map<String, Object>> getAllIngresos() {
         List<Ingreso> ingresos = ingresoService.getAllIngresos();
         List<IngresoDTO> response = ingresos.stream().map(ingreso -> {
             Long cuentaId = ingreso.getCuenta() != null ? ingreso.getCuenta().getId() : null;
@@ -73,70 +165,107 @@ public class IngresoController {
             return new IngresoDTO(ingreso.getId(), ingreso.getMonto(), cuentaId, categoriaId);
         }).collect(Collectors.toList());
 
-        return ResponseEntity.ok(response);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("data", response);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/cuenta/{cuentaId}")
-    public ResponseEntity<List<IngresoDTO>> getIngresosByCuentaId(@PathVariable Long cuentaId) {
+    public ResponseEntity<Map<String, Object>> getIngresosByCuentaId(@PathVariable Long cuentaId) {
         List<Ingreso> ingresos = ingresoService.getIngresosByCuentaId(cuentaId);
         List<IngresoDTO> response = ingresos.stream().map(ingreso -> {
             Long categoriaId = ingreso.getCategoria() != null ? ingreso.getCategoria().getId() : null;
             return new IngresoDTO(ingreso.getId(), ingreso.getMonto(), cuentaId, categoriaId);
         }).collect(Collectors.toList());
 
-        return ResponseEntity.ok(response);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("data", response);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<IngresoDTO> getIngresoById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getIngresoById(@PathVariable Long id) {
         Optional<Ingreso> ingreso = ingresoService.getIngresoById(id);
-        return ingreso.map(i -> {
+        Map<String, Object> result = new HashMap<>();
+        if (ingreso.isPresent()) {
+            Ingreso i = ingreso.get();
             Long cuentaId = i.getCuenta() != null ? i.getCuenta().getId() : null;
             Long categoriaId = i.getCategoria() != null ? i.getCategoria().getId() : null;
             IngresoDTO response = new IngresoDTO(i.getId(), i.getMonto(), cuentaId, categoriaId);
-            return ResponseEntity.ok(response);
-        }).orElseGet(() -> ResponseEntity.notFound().build());
+
+            result.put("success", true);
+            result.put("data", response);
+            return ResponseEntity.ok(result);
+        } else {
+            result.put("success", false);
+            result.put("message", "Ingreso no encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+        }
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createIngreso(@RequestBody Ingreso ingreso, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> createIngreso(@RequestBody Ingreso ingreso, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
+        Map<String, Object> response = new HashMap<>();
         if (token != null && isUser(token)) {
             Optional<Cuenta> cuenta = getCuentaFromToken(token);
             if (cuenta.isPresent()) {
                 ingreso.setCuenta(cuenta.get());
                 Ingreso nuevaIngreso = ingresoService.createIngreso(ingreso);
-                return ResponseEntity.ok("Ingreso agregado a la cuenta ID " + nuevaIngreso.getCuenta().getId());
+                response.put("success", true);
+                response.put("message", "Ingreso creado exitosamente.");
+                response.put("data", nuevaIngreso);
+                return ResponseEntity.status(HttpStatus.CREATED).body(response);
             }
-            return ResponseEntity.status(404).build();
+            response.put("success", false);
+            response.put("message", "Cuenta no encontrada.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } else {
-            return ResponseEntity.status(403).build();
+            response.put("success", false);
+            response.put("message", "Acceso denegado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateIngreso(@PathVariable Long id, @RequestBody Ingreso ingreso, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> updateIngreso(@PathVariable Long id, @RequestBody Ingreso ingreso,
+            HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
+        Map<String, Object> response = new HashMap<>();
         if (token != null && isUser(token)) {
             try {
                 Ingreso ingresoActualizado = ingresoService.updateIngreso(id, ingreso);
-                return ResponseEntity.ok("Ingreso ID " + ingresoActualizado.getId() + " actualizado en la cuenta ID " + ingresoActualizado.getCuenta().getId());
+                response.put("success", true);
+                response.put("message", "Ingreso actualizado exitosamente.");
+                response.put("data", ingresoActualizado);
+                return ResponseEntity.ok(response);
             } catch (RuntimeException e) {
-                return ResponseEntity.notFound().build();
+                response.put("success", false);
+                response.put("message", "Ingreso no encontrado.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
         } else {
-            return ResponseEntity.status(403).build();
+            response.put("success", false);
+            response.put("message", "Acceso denegado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteIngreso(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> deleteIngreso(@PathVariable Long id, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
+        Map<String, Object> response = new HashMap<>();
         if (token != null && isUser(token)) {
             ingresoService.deleteIngreso(id);
-            return ResponseEntity.ok("Ingreso ID " + id + " eliminado");
+            response.put("success", true);
+            response.put("message", "Ingreso eliminado exitosamente.");
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(403).build();
+            response.put("success", false);
+            response.put("message", "Acceso denegado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
     }
 

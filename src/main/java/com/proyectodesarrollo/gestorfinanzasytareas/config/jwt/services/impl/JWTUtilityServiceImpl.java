@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.JOSEException;
@@ -24,9 +26,14 @@ import com.proyectodesarrollo.gestorfinanzasytareas.services.CuentaService;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Service
+@PropertySource("classpath:token.properties")
 public class JWTUtilityServiceImpl implements IJWTUtilityService {
 
-    private static final String SECRET_KEY = "Proyectogestorfinanzasytareasfinal";
+    @Value("${jwt.key}")
+    private String SECRET_KEY;
+
+    @Value("${jwt.exptime}")
+    private int exptime;
 
     @Autowired
     private JWTUtilityServiceImpl jwtUtilityService;
@@ -36,7 +43,7 @@ public class JWTUtilityServiceImpl implements IJWTUtilityService {
 
     @Override
     public String generateJWT(Long userId, String name, Role role, String email) throws JOSEException {
-        // Convertimos la clave secreta en bytes para usar en HMAC
+
         byte[] secretKeyBytes = SECRET_KEY.getBytes();
 
         JWSSigner signer = new MACSigner(secretKeyBytes);
@@ -52,7 +59,7 @@ public class JWTUtilityServiceImpl implements IJWTUtilityService {
                 .claim("email", email)
                 .claim("IDcuenta", cuenta.get().getId())
                 .issueTime(now)
-                .expirationTime(new Date(now.getTime() + 3600000)) // Expira en 1 hora
+                .expirationTime(new Date(now.getTime() + exptime))
                 .build();
 
         SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);

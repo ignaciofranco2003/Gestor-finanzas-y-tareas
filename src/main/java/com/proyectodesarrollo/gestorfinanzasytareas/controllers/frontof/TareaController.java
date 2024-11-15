@@ -1,10 +1,13 @@
 package com.proyectodesarrollo.gestorfinanzasytareas.controllers.frontof;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,76 +67,195 @@ public class TareaController {
         }
     }
 
+    // @GetMapping("/all")
+    // public ResponseEntity<List<TareaDTO>> getAllTareas() {
+    // List<Tarea> tareas = tareaService.getAllTareas();
+    // List<TareaDTO> response = tareas.stream().map(tarea -> {
+    // Long cuentaId = tarea.getCuenta() != null ? tarea.getCuenta().getId() : null;
+    // return new TareaDTO(tarea.getId(), tarea.getDescripcion(),
+    // tarea.isCompletada(), cuentaId);
+    // }).collect(Collectors.toList());
+
+    // return ResponseEntity.ok(response);
+    // }
+
+    // @GetMapping("/cuenta/{cuentaId}")
+    // public ResponseEntity<List<TareaDTO>> getTareasByCuentaId(@PathVariable Long
+    // cuentaId) {
+    // List<Tarea> tareas = tareaService.getTareasByCuentaId(cuentaId);
+    // List<TareaDTO> response = tareas.stream().map(tarea ->
+    // new TareaDTO(tarea.getId(), tarea.getDescripcion(), tarea.isCompletada(),
+    // cuentaId)
+    // ).collect(Collectors.toList());
+
+    // return ResponseEntity.ok(response);
+    // }
+
+    // @GetMapping("/{id}")
+    // public ResponseEntity<TareaDTO> getTareaById(@PathVariable Long id) {
+    // Optional<Tarea> tarea = tareaService.getTareaById(id);
+    // return tarea.map(t -> {
+    // Long cuentaId = t.getCuenta() != null ? t.getCuenta().getId() : null;
+    // TareaDTO response = new TareaDTO(t.getId(), t.getDescripcion(),
+    // t.isCompletada(), cuentaId);
+    // return ResponseEntity.ok(response);
+    // }).orElseGet(() -> ResponseEntity.notFound().build());
+    // }
+
+    // @PostMapping("/create")
+    // public ResponseEntity<String> createTarea(@RequestBody Tarea tarea,
+    // HttpServletRequest request) {
+    // String token = extractTokenFromRequest(request);
+    // if (token != null && isUser(token)) {
+    // Optional<Cuenta> cuenta = getCuentaFromToken(token);
+    // if (cuenta.isPresent()) {
+    // tarea.setCuenta(cuenta.get());
+    // Tarea nuevaTarea = tareaService.createTarea(tarea);
+    // return ResponseEntity.ok("Tarea agregada a la cuenta ID " +
+    // nuevaTarea.getCuenta().getId());
+    // }
+    // return ResponseEntity.status(404).build();
+    // } else {
+    // return ResponseEntity.status(403).build();
+    // }
+    // }
+
+    // @PutMapping("/{id}")
+    // public ResponseEntity<String> updateTarea(@PathVariable Long id, @RequestBody
+    // Tarea tarea, HttpServletRequest request) {
+    // String token = extractTokenFromRequest(request);
+    // if (token != null && isUser(token)) {
+    // try {
+    // Tarea tareaActualizada = tareaService.updateTarea(id, tarea);
+    // return ResponseEntity.ok("Tarea ID " + tareaActualizada.getId() + "
+    // actualizada en la cuenta ID " + tareaActualizada.getCuenta().getId());
+    // } catch (RuntimeException e) {
+    // return ResponseEntity.notFound().build();
+    // }
+    // } else {
+    // return ResponseEntity.status(403).build();
+    // }
+    // }
+
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<String> deleteTarea(@PathVariable Long id,
+    // HttpServletRequest request) {
+    // String token = extractTokenFromRequest(request);
+    // if (token != null && isUser(token)) {
+    // tareaService.deleteTarea(id);
+    // return ResponseEntity.ok("Tarea ID " + id + " eliminada");
+    // } else {
+    // return ResponseEntity.status(403).build();
+    // }
+    // }
+
     @GetMapping("/all")
-    public ResponseEntity<List<TareaDTO>> getAllTareas() {
+    public ResponseEntity<Map<String, Object>> getAllTareas() {
         List<Tarea> tareas = tareaService.getAllTareas();
         List<TareaDTO> response = tareas.stream().map(tarea -> {
             Long cuentaId = tarea.getCuenta() != null ? tarea.getCuenta().getId() : null;
             return new TareaDTO(tarea.getId(), tarea.getDescripcion(), tarea.isCompletada(), cuentaId);
         }).collect(Collectors.toList());
-        
-        return ResponseEntity.ok(response);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("data", response);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/cuenta/{cuentaId}")
-    public ResponseEntity<List<TareaDTO>> getTareasByCuentaId(@PathVariable Long cuentaId) {
+    public ResponseEntity<Map<String, Object>> getTareasByCuentaId(@PathVariable Long cuentaId) {
         List<Tarea> tareas = tareaService.getTareasByCuentaId(cuentaId);
-        List<TareaDTO> response = tareas.stream().map(tarea -> 
-            new TareaDTO(tarea.getId(), tarea.getDescripcion(), tarea.isCompletada(), cuentaId)
-        ).collect(Collectors.toList());
-        
-        return ResponseEntity.ok(response);
+        List<TareaDTO> response = tareas.stream()
+                .map(tarea -> new TareaDTO(tarea.getId(), tarea.getDescripcion(), tarea.isCompletada(), cuentaId))
+                .collect(Collectors.toList());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("data", response);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TareaDTO> getTareaById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getTareaById(@PathVariable Long id) {
         Optional<Tarea> tarea = tareaService.getTareaById(id);
-        return tarea.map(t -> {
+        Map<String, Object> result = new HashMap<>();
+        if (tarea.isPresent()) {
+            Tarea t = tarea.get();
             Long cuentaId = t.getCuenta() != null ? t.getCuenta().getId() : null;
             TareaDTO response = new TareaDTO(t.getId(), t.getDescripcion(), t.isCompletada(), cuentaId);
-            return ResponseEntity.ok(response);
-        }).orElseGet(() -> ResponseEntity.notFound().build());
+
+            result.put("success", true);
+            result.put("data", response);
+            return ResponseEntity.ok(result);
+        } else {
+            result.put("success", false);
+            result.put("message", "Tarea no encontrada.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+        }
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createTarea(@RequestBody Tarea tarea, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> createTarea(@RequestBody Tarea tarea, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
+        Map<String, Object> response = new HashMap<>();
         if (token != null && isUser(token)) {
             Optional<Cuenta> cuenta = getCuentaFromToken(token);
             if (cuenta.isPresent()) {
                 tarea.setCuenta(cuenta.get());
                 Tarea nuevaTarea = tareaService.createTarea(tarea);
-                return ResponseEntity.ok("Tarea agregada a la cuenta ID " + nuevaTarea.getCuenta().getId());
+                response.put("success", true);
+                response.put("message", "Tarea creada exitosamente.");
+                response.put("data", nuevaTarea);
+                return ResponseEntity.status(HttpStatus.CREATED).body(response);
             }
-            return ResponseEntity.status(404).build();
+            response.put("success", false);
+            response.put("message", "Cuenta no encontrada.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } else {
-            return ResponseEntity.status(403).build();
+            response.put("success", false);
+            response.put("message", "Acceso denegado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTarea(@PathVariable Long id, @RequestBody Tarea tarea, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> updateTarea(@PathVariable Long id, @RequestBody Tarea tarea,
+            HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
+        Map<String, Object> response = new HashMap<>();
         if (token != null && isUser(token)) {
             try {
                 Tarea tareaActualizada = tareaService.updateTarea(id, tarea);
-                return ResponseEntity.ok("Tarea ID " + tareaActualizada.getId() + " actualizada en la cuenta ID " + tareaActualizada.getCuenta().getId());
+                response.put("success", true);
+                response.put("message", "Tarea actualizada exitosamente.");
+                response.put("data", tareaActualizada);
+                return ResponseEntity.ok(response);
             } catch (RuntimeException e) {
-                return ResponseEntity.notFound().build();
+                response.put("success", false);
+                response.put("message", "Tarea no encontrada.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
         } else {
-            return ResponseEntity.status(403).build();
+            response.put("success", false);
+            response.put("message", "Acceso denegado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTarea(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> deleteTarea(@PathVariable Long id, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
+        Map<String, Object> response = new HashMap<>();
         if (token != null && isUser(token)) {
             tareaService.deleteTarea(id);
-            return ResponseEntity.ok("Tarea ID " + id + " eliminada");
+            response.put("success", true);
+            response.put("message", "Tarea eliminada exitosamente.");
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(403).build();
+            response.put("success", false);
+            response.put("message", "Acceso denegado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
     }
 

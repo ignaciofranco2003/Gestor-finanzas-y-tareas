@@ -1,10 +1,13 @@
 package com.proyectodesarrollo.gestorfinanzasytareas.controllers.frontof;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,77 +57,185 @@ public class AhorroController {
         }
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<AhorroDTO>> getAllAhorros() {
-        List<Ahorro> ahorros = ahorroService.getAllAhorros();
-        List<AhorroDTO> response = ahorros.stream().map(ahorro -> {
-            Long cuentaId = ahorro.getCuenta() != null ? ahorro.getCuenta().getId() : null;
-            return new AhorroDTO(ahorro.getId(), ahorro.getNombreAhorro(), ahorro.getMontoActual(), ahorro.getMontoFinal(), cuentaId);
-        }).collect(Collectors.toList());
+    // @GetMapping("/all")
+    // public ResponseEntity<List<AhorroDTO>> getAllAhorros() {
+    //     List<Ahorro> ahorros = ahorroService.getAllAhorros();
+    //     List<AhorroDTO> response = ahorros.stream().map(ahorro -> {
+    //         Long cuentaId = ahorro.getCuenta() != null ? ahorro.getCuenta().getId() : null;
+    //         return new AhorroDTO(ahorro.getId(), ahorro.getNombreAhorro(), ahorro.getMontoActual(), ahorro.getMontoFinal(), cuentaId);
+    //     }).collect(Collectors.toList());
 
-        return ResponseEntity.ok(response);
+    //     return ResponseEntity.ok(response);
+    // }
+
+    // @GetMapping("/cuenta/{cuentaId}")
+    // public ResponseEntity<List<AhorroDTO>> getAhorrosByCuentaId(@PathVariable Long cuentaId) {
+    //     List<Ahorro> ahorros = ahorroService.getAhorrosByCuentaId(cuentaId);
+    //     List<AhorroDTO> response = ahorros.stream().map(ahorro -> {
+    //         return new AhorroDTO(ahorro.getId(), ahorro.getNombreAhorro(), ahorro.getMontoActual(), ahorro.getMontoFinal(), cuentaId);
+    //     }).collect(Collectors.toList());
+
+    //     return ResponseEntity.ok(response);
+    // }
+
+    // @GetMapping("/{id}")
+    // public ResponseEntity<AhorroDTO> getAhorroById(@PathVariable Long id) {
+    //     Optional<Ahorro> ahorro = ahorroService.getAhorroById(id);
+    //     return ahorro.map(a -> {
+    //         Long cuentaId = a.getCuenta() != null ? a.getCuenta().getId() : null;
+    //         AhorroDTO response = new AhorroDTO(a.getId(), a.getNombreAhorro(), a.getMontoActual(), a.getMontoFinal(), cuentaId);
+    //         return ResponseEntity.ok(response);
+    //     }).orElseGet(() -> ResponseEntity.notFound().build());
+    // }
+
+    // @PostMapping("/create")
+    // public ResponseEntity<String> createAhorro(@RequestBody Ahorro ahorro, HttpServletRequest request) {
+    //     String token = jwtUtilityService.extractTokenFromRequest(request);
+    //     if (token != null && jwtUtilityService.isUser(token)) {
+    //         Optional<Cuenta> cuenta = getCuentaFromToken(token);
+    //         if (cuenta.isPresent()) {
+    //             ahorro.setCuenta(cuenta.get());
+    //             Ahorro nuevoAhorro = ahorroService.createAhorro(ahorro);
+    //             return ResponseEntity.ok("Ahorro creado para la cuenta ID " + nuevoAhorro.getCuenta().getId());
+    //         }
+    //         return ResponseEntity.status(404).build();
+    //     } else {
+    //         return ResponseEntity.status(403).build();
+    //     }
+    // }
+
+    // @PutMapping("/{id}")
+    // public ResponseEntity<String> updateAhorro(@PathVariable Long id, @RequestBody Ahorro ahorro, HttpServletRequest request) {
+    //     String token = jwtUtilityService.extractTokenFromRequest(request);
+    //     if (token != null && jwtUtilityService.isUser(token)) {
+    //         try {
+    //             Ahorro ahorroActualizado = ahorroService.updateAhorro(id, ahorro);
+    //             return ResponseEntity.ok("Ahorro ID " + ahorroActualizado.getId() + " actualizado en la cuenta ID " + ahorroActualizado.getCuenta().getId());
+    //         } catch (RuntimeException e) {
+    //             return ResponseEntity.notFound().build();
+    //         }
+    //     } else {
+    //         return ResponseEntity.status(403).build();
+    //     }
+    // }
+
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<String> deleteAhorro(@PathVariable Long id, HttpServletRequest request) {
+    //     String token = jwtUtilityService.extractTokenFromRequest(request);
+    //     if (token != null && jwtUtilityService.isUser(token)) {
+    //         ahorroService.deleteAhorro(id);
+    //         return ResponseEntity.ok("Ahorro ID " + id + " eliminado");
+    //     } else {
+    //         return ResponseEntity.status(403).build();
+    //     }
+    // }
+@GetMapping("/all")
+public ResponseEntity<Map<String, Object>> getAllAhorros() {
+    List<Ahorro> ahorros = ahorroService.getAllAhorros();
+    List<AhorroDTO> response = ahorros.stream().map(ahorro -> {
+        Long cuentaId = ahorro.getCuenta() != null ? ahorro.getCuenta().getId() : null;
+        return new AhorroDTO(ahorro.getId(), ahorro.getNombreAhorro(), ahorro.getMontoActual(), ahorro.getMontoFinal(), cuentaId);
+    }).collect(Collectors.toList());
+
+    Map<String, Object> result = new HashMap<>();
+    result.put("success", true);
+    result.put("data", response);
+    return ResponseEntity.ok(result);
+}
+
+@GetMapping("/cuenta/{cuentaId}")
+public ResponseEntity<Map<String, Object>> getAhorrosByCuentaId(@PathVariable Long cuentaId) {
+    List<Ahorro> ahorros = ahorroService.getAhorrosByCuentaId(cuentaId);
+    List<AhorroDTO> response = ahorros.stream().map(ahorro -> {
+        return new AhorroDTO(ahorro.getId(), ahorro.getNombreAhorro(), ahorro.getMontoActual(), ahorro.getMontoFinal(), cuentaId);
+    }).collect(Collectors.toList());
+
+    Map<String, Object> result = new HashMap<>();
+    result.put("success", true);
+    result.put("data", response);
+    return ResponseEntity.ok(result);
+}
+
+@GetMapping("/{id}")
+public ResponseEntity<Map<String, Object>> getAhorroById(@PathVariable Long id) {
+    Optional<Ahorro> ahorro = ahorroService.getAhorroById(id);
+    if (ahorro.isPresent()) {
+        Ahorro a = ahorro.get();
+        Long cuentaId = a.getCuenta() != null ? a.getCuenta().getId() : null;
+        AhorroDTO response = new AhorroDTO(a.getId(), a.getNombreAhorro(), a.getMontoActual(), a.getMontoFinal(), cuentaId);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("data", response);
+        return ResponseEntity.ok(result);
+    } else {
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", false);
+        result.put("message", "Ahorro no encontrado.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
     }
+}
 
-    @GetMapping("/cuenta/{cuentaId}")
-    public ResponseEntity<List<AhorroDTO>> getAhorrosByCuentaId(@PathVariable Long cuentaId) {
-        List<Ahorro> ahorros = ahorroService.getAhorrosByCuentaId(cuentaId);
-        List<AhorroDTO> response = ahorros.stream().map(ahorro -> {
-            return new AhorroDTO(ahorro.getId(), ahorro.getNombreAhorro(), ahorro.getMontoActual(), ahorro.getMontoFinal(), cuentaId);
-        }).collect(Collectors.toList());
-
-        return ResponseEntity.ok(response);
+@PostMapping("/create")
+public ResponseEntity<Map<String, Object>> createAhorro(@RequestBody Ahorro ahorro, HttpServletRequest request) {
+    String token = jwtUtilityService.extractTokenFromRequest(request);
+    Map<String, Object> response = new HashMap<>();
+    if (token != null && jwtUtilityService.isUser(token)) {
+        Optional<Cuenta> cuenta = getCuentaFromToken(token);
+        if (cuenta.isPresent()) {
+            ahorro.setCuenta(cuenta.get());
+            Ahorro nuevoAhorro = ahorroService.createAhorro(ahorro);
+            response.put("success", true);
+            response.put("message", "Ahorro creado exitosamente.");
+            response.put("data", nuevoAhorro);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+        response.put("success", false);
+        response.put("message", "Cuenta no encontrada.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    } else {
+        response.put("success", false);
+        response.put("message", "Acceso denegado.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
+}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AhorroDTO> getAhorroById(@PathVariable Long id) {
-        Optional<Ahorro> ahorro = ahorroService.getAhorroById(id);
-        return ahorro.map(a -> {
-            Long cuentaId = a.getCuenta() != null ? a.getCuenta().getId() : null;
-            AhorroDTO response = new AhorroDTO(a.getId(), a.getNombreAhorro(), a.getMontoActual(), a.getMontoFinal(), cuentaId);
+@PutMapping("/{id}")
+public ResponseEntity<Map<String, Object>> updateAhorro(@PathVariable Long id, @RequestBody Ahorro ahorro, HttpServletRequest request) {
+    String token = jwtUtilityService.extractTokenFromRequest(request);
+    Map<String, Object> response = new HashMap<>();
+    if (token != null && jwtUtilityService.isUser(token)) {
+        try {
+            Ahorro ahorroActualizado = ahorroService.updateAhorro(id, ahorro);
+            response.put("success", true);
+            response.put("message", "Ahorro actualizado exitosamente.");
+            response.put("data", ahorroActualizado);
             return ResponseEntity.ok(response);
-        }).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/create")
-    public ResponseEntity<String> createAhorro(@RequestBody Ahorro ahorro, HttpServletRequest request) {
-        String token = jwtUtilityService.extractTokenFromRequest(request);
-        if (token != null && jwtUtilityService.isUser(token)) {
-            Optional<Cuenta> cuenta = getCuentaFromToken(token);
-            if (cuenta.isPresent()) {
-                ahorro.setCuenta(cuenta.get());
-                Ahorro nuevoAhorro = ahorroService.createAhorro(ahorro);
-                return ResponseEntity.ok("Ahorro creado para la cuenta ID " + nuevoAhorro.getCuenta().getId());
-            }
-            return ResponseEntity.status(404).build();
-        } else {
-            return ResponseEntity.status(403).build();
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("message", "Ahorro no encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
+    } else {
+        response.put("success", false);
+        response.put("message", "Acceso denegado.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
+}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateAhorro(@PathVariable Long id, @RequestBody Ahorro ahorro, HttpServletRequest request) {
-        String token = jwtUtilityService.extractTokenFromRequest(request);
-        if (token != null && jwtUtilityService.isUser(token)) {
-            try {
-                Ahorro ahorroActualizado = ahorroService.updateAhorro(id, ahorro);
-                return ResponseEntity.ok("Ahorro ID " + ahorroActualizado.getId() + " actualizado en la cuenta ID " + ahorroActualizado.getCuenta().getId());
-            } catch (RuntimeException e) {
-                return ResponseEntity.notFound().build();
-            }
-        } else {
-            return ResponseEntity.status(403).build();
-        }
+@DeleteMapping("/{id}")
+public ResponseEntity<Map<String, Object>> deleteAhorro(@PathVariable Long id, HttpServletRequest request) {
+    String token = jwtUtilityService.extractTokenFromRequest(request);
+    Map<String, Object> response = new HashMap<>();
+    if (token != null && jwtUtilityService.isUser(token)) {
+        ahorroService.deleteAhorro(id);
+        response.put("success", true);
+        response.put("message", "Ahorro eliminado exitosamente.");
+        return ResponseEntity.ok(response);
+    } else {
+        response.put("success", false);
+        response.put("message", "Acceso denegado.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAhorro(@PathVariable Long id, HttpServletRequest request) {
-        String token = jwtUtilityService.extractTokenFromRequest(request);
-        if (token != null && jwtUtilityService.isUser(token)) {
-            ahorroService.deleteAhorro(id);
-            return ResponseEntity.ok("Ahorro ID " + id + " eliminado");
-        } else {
-            return ResponseEntity.status(403).build();
-        }
-    }
-
+}
 }

@@ -1,5 +1,8 @@
 package com.proyectodesarrollo.gestorfinanzasytareas.controllers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,34 +27,48 @@ public class UserRestController {
     private CuentaService cuentaService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User user) {
+        Map<String, Object> response = new HashMap<>();
         try {
             if (!isPasswordValid(user.getPassword())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La contraseña debe tener entre 4 y 16 caracteres.");
+                response.put("success", false);
+                response.put("message", "La contraseña debe tener entre 4 y 16 caracteres.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
-            
+
             if (!isUsernameValid(user.getUsername())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario debe tener entre 4 y 20 caracteres.");
+                response.put("success", false);
+                response.put("message", "El nombre de usuario debe tener entre 4 y 20 caracteres.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
-            
+
             if (!isEmailValid(user.getEmail())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Formato de correo electrónico inválido.");
+                response.put("success", false);
+                response.put("message", "Formato de correo electrónico inválido.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
-            
+
             userService.registerUser(user);
             Cuenta cuenta = new Cuenta();
             cuenta.setUsuario(user);
             cuenta.setNombre("Cuenta de " + user.getUsername());
             cuentaService.createCuenta(cuenta);
-            return new ResponseEntity<>("Usuario y cuenta creados exitosamente", HttpStatus.CREATED);
-            
+
+            response.put("success", true);
+            response.put("message", "Usuario y cuenta creados exitosamente.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>("Correo electrónico en uso", HttpStatus.CONFLICT);
+            response.put("success", false);
+            response.put("message", "Correo electrónico en uso.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR);
+            response.put("success", false);
+            response.put("message", "Error interno del servidor.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    
+
     // Método para validar la contraseña
     private boolean isPasswordValid(String password) {
         return password != null && password.length() >= 4 && password.length() <= 16;

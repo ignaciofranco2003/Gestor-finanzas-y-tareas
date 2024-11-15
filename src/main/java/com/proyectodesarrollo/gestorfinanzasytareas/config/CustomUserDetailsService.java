@@ -24,7 +24,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("Usuario no encontrado: " + email);
         }
-        
             // Suponiendo que el método getName() devuelve el nombre del rol como String
         String roleName = user.getRole().getName(); // Cambia esto según la implementación de tu clase Role
 

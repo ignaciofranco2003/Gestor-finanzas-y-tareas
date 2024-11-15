@@ -1,5 +1,7 @@
 package com.proyectodesarrollo.gestorfinanzasytareas.controllers;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,22 +34,27 @@ public class RecoverPassController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/verificar-email")
-    public ResponseEntity<String> verificarEmail(@RequestBody EmailReq email) {
-
+    public ResponseEntity<Map<String, Object>> verificarEmail(@RequestBody EmailReq email) {
+        Map<String, Object> response = new HashMap<>();
         if (userService.getUserByEmail(email.getEmail()) != null) {
-            return ResponseEntity.ok("El email existe.");
+            response.put("success", true);
+            response.put("message", "El email existe.");
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El email no existe.");
+            response.put("success", false);
+            response.put("message", "El email no existe.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 
     @PostMapping("/enviar-codigo")
-    public ResponseEntity<String> enviarCodigo(@RequestBody CorreoRequest correoRequest) {
+    public ResponseEntity<Map<String, Object>> enviarCodigo(@RequestBody CorreoRequest correoRequest) {
+        Map<String, Object> response = new HashMap<>();
         try {
             User aux = userService.getUserByEmail(correoRequest.getDestinatario());
-            
+
             Random random = new Random();
-            int numeroAleatorio = 100000 + random.nextInt(900000); // Genera un número entre 100000 y 999999
+            int numeroAleatorio = 100000 + random.nextInt(900000);
             String mensaje = "Su código de verificación es " + numeroAleatorio;
 
             String numeroAleatorioStr = String.valueOf(numeroAleatorio);
@@ -57,42 +64,60 @@ public class RecoverPassController {
 
             correoRequest.setMensaje(mensaje);
             emailService.enviarCorreo(correoRequest);
-            return ResponseEntity.ok("Correo enviado exitosamente.");
+
+            response.put("success", true);
+            response.put("message", "Correo enviado exitosamente.");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al enviar el correo: " + e.getMessage());
+            response.put("success", false);
+            response.put("message", "Error al enviar el correo: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @PostMapping("/validar-codigo")
-    public ResponseEntity<String> validarCodigo(@RequestBody CodigoRequest codigoRequest) {
+    public ResponseEntity<Map<String, Object>> validarCodigo(@RequestBody CodigoRequest codigoRequest) {
+        Map<String, Object> response = new HashMap<>();
         User aux = userService.getUserByEmail(codigoRequest.getEmail());
         if (aux != null && aux.getVerificationCode().equals(codigoRequest.getCodigo())) {
-            return ResponseEntity.ok("Código verificado correctamente.");
+            response.put("success", true);
+            response.put("message", "Código verificado correctamente.");
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código de verificación incorrecto.");
+            response.put("success", false);
+            response.put("message", "Código de verificación incorrecto.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
     @PostMapping("/cambiar-password")
-    public ResponseEntity<String> cambiarPassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
+    public ResponseEntity<Map<String, Object>> cambiarPassword(
+            @RequestBody PasswordChangeRequest passwordChangeRequest) {
+        Map<String, Object> response = new HashMap<>();
         User aux = userService.getUserByEmail(passwordChangeRequest.getEmail());
         if (aux != null && aux.getVerificationCode().equals(passwordChangeRequest.getCodigo())) {
-            if (passwordChangeRequest.getNuevaPassword() != null 
-                && passwordChangeRequest.getNuevaPassword().length() >= 4 
-                && passwordChangeRequest.getNuevaPassword().length() <= 16) {
+            if (passwordChangeRequest.getNuevaPassword() != null
+                    && passwordChangeRequest.getNuevaPassword().length() >= 4
+                    && passwordChangeRequest.getNuevaPassword().length() <= 16) {
                 aux.setPassword(passwordEncoder.encode(passwordChangeRequest.getNuevaPassword()));
                 aux.setVerificationCode(null); // Limpia el código de verificación
                 userService.saveUser(aux);
-                return ResponseEntity.ok("Contraseña cambiada exitosamente.");
+                response.put("success", true);
+                response.put("message", "Contraseña cambiada exitosamente.");
+                return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La contraseña debe tener entre 4 y 16 caracteres.");
+                response.put("success", false);
+                response.put("message", "La contraseña debe tener entre 4 y 16 caracteres.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código de verificación incorrecto.");
+            response.put("success", false);
+            response.put("message", "Código de verificación incorrecto.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
-    static class EmailReq{
+    static class EmailReq {
         private String email;
 
         public String getEmail() {

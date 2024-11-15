@@ -21,12 +21,18 @@ public class EmailConfig {
     @Value("${email.password}")
     private String password;
 
+    @Value("${email.port}")
+    private String port;
+
+    @Value("${email.host}")
+    private String host;
+
     private Properties getMailProperties() {
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", "smtp.gmail.com"); // Ejemplo: smtp.gmail.com
-        properties.put("mail.smtp.port", "587"); // Ejemplo: 587
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.port", port);
         return properties;
     }
 

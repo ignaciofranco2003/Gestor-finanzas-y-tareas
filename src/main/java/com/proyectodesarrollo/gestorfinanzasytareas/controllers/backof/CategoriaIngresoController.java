@@ -1,9 +1,12 @@
 package com.proyectodesarrollo.gestorfinanzasytareas.controllers.backof;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,67 +46,105 @@ public class CategoriaIngresoController {
     }
 
     @GetMapping("/all")
-    public List<CategoriaIngreso> getAllCategorias() {
-        return categoriaIngresoService.getAllCategorias();
+    public ResponseEntity<Map<String, Object>> getAllCategorias() {
+        List<CategoriaIngreso> categorias = categoriaIngresoService.getAllCategorias();
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("data", categorias);
+        return ResponseEntity.ok(response);
     }
-
+    
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaIngreso> getCategoriaById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getCategoriaById(@PathVariable Long id) {
         Optional<CategoriaIngreso> categoria = categoriaIngresoService.getCategoriaById(id);
-        return categoria.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        if (categoria.isPresent()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("data", categoria.get());
+            return ResponseEntity.ok(response);
+        } else {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Categoría no encontrada");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
-
+    
     @PostMapping
-    public ResponseEntity<String> createCategoria(@RequestBody CategoriaIngreso categoriaIngreso, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> createCategoria(@RequestBody CategoriaIngreso categoriaIngreso, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
         if (token != null && isAdmin(token)) {
             try {
                 categoriaIngresoService.createCategoria(categoriaIngreso);
-                return ResponseEntity.ok("Categoría creada exitosamente");
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "Categoría creada exitosamente");
+                return ResponseEntity.ok(response);
             } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Ya existe una categoria con ese nombre");
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", false);
+                response.put("message", "Ya existe una categoría con ese nombre");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
         } else {
-            return ResponseEntity.status(403).build();
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "No tienes permiso para realizar esta acción");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
     }
-
+    
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCategoria(@PathVariable Long id, @RequestBody CategoriaIngreso categoriaIngreso, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> updateCategoria(@PathVariable Long id, @RequestBody CategoriaIngreso categoriaIngreso, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
-        // Verificar si el token existe y si el usuario tiene permisos de administrador
         if (token != null && isAdmin(token)) {
             try {
-                // Intentar actualizar la categoría
                 categoriaIngresoService.updateCategoria(id, categoriaIngreso);
-                return ResponseEntity.ok("Modificado con éxito");
-    
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "Modificado con éxito");
+                return ResponseEntity.ok(response);
             } catch (IllegalArgumentException e) {
-                // Captura el caso de nombre duplicado con diferente ID
-                return ResponseEntity.badRequest().body("Ya existe otra categoría con ese nombre");
-    
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", false);
+                response.put("message", "Ya existe otra categoría con ese nombre");
+                return ResponseEntity.badRequest().body(response);
             } catch (RuntimeException e) {
-                // Captura el caso de categoría no encontrada
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Categoría no encontrada");
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", false);
+                response.put("message", "Categoría no encontrada");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
         } else {
-            // Respuesta 403 Forbidden si el usuario no es admin
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para realizar esta acción");
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "No tienes permiso para realizar esta acción");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCategoria(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> deleteCategoria(@PathVariable Long id, HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
         if (token != null && isAdmin(token)) {
             try {
                 categoriaIngresoService.deleteCategoria(id);
-                return ResponseEntity.ok("Categoria eliminada");
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Categoría eliminada");
+                return ResponseEntity.ok(response);
+            } catch (DataIntegrityViolationException e) {
+                Map<String, String> response = new HashMap<>();
+                response.put("error", "No se puede eliminar la categoría porque está referenciada en otra entidad.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             } catch (RuntimeException e) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La categoría no existe.");
+                Map<String, String> response = new HashMap<>();
+                response.put("error", "La categoría no existe.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No se pudo eliminar la categoría");
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "No se pudo eliminar la categoría");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
     }
 
