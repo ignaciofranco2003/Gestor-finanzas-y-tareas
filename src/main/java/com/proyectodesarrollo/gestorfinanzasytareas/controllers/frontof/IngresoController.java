@@ -73,7 +73,7 @@ public class IngresoController {
         List<IngresoDTO> response = ingresos.stream().map(ingreso -> {
             Long cuentaId = ingreso.getCuenta() != null ? ingreso.getCuenta().getId() : null;
             Long categoriaId = ingreso.getCategoria() != null ? ingreso.getCategoria().getId() : null;
-            return new IngresoDTO(ingreso.getId(), ingreso.getMonto(), cuentaId, categoriaId);
+            return new IngresoDTO(ingreso.getId(), ingreso.getMonto(), ingreso.getFecha(),cuentaId, categoriaId);
         }).collect(Collectors.toList());
 
         Map<String, Object> result = new HashMap<>();
@@ -87,7 +87,7 @@ public class IngresoController {
         List<Ingreso> ingresos = ingresoService.getIngresosByCuentaId(cuentaId);
         List<IngresoDTO> response = ingresos.stream().map(ingreso -> {
             Long categoriaId = ingreso.getCategoria() != null ? ingreso.getCategoria().getId() : null;
-            return new IngresoDTO(ingreso.getId(), ingreso.getMonto(), cuentaId, categoriaId);
+            return new IngresoDTO(ingreso.getId(), ingreso.getMonto(),ingreso.getFecha(), cuentaId, categoriaId);
         }).collect(Collectors.toList());
 
         Map<String, Object> result = new HashMap<>();
@@ -104,8 +104,7 @@ public class IngresoController {
             Ingreso i = ingreso.get();
             Long cuentaId = i.getCuenta() != null ? i.getCuenta().getId() : null;
             Long categoriaId = i.getCategoria() != null ? i.getCategoria().getId() : null;
-            IngresoDTO response = new IngresoDTO(i.getId(), i.getMonto(), cuentaId, categoriaId);
-
+            IngresoDTO response = new IngresoDTO(i.getId(), i.getMonto(), i.getFecha() ,cuentaId, categoriaId);
             result.put("success", true);
             result.put("data", response);
             return ResponseEntity.ok(result);
