@@ -67,88 +67,6 @@ public class TareaController {
         }
     }
 
-    // @GetMapping("/all")
-    // public ResponseEntity<List<TareaDTO>> getAllTareas() {
-    // List<Tarea> tareas = tareaService.getAllTareas();
-    // List<TareaDTO> response = tareas.stream().map(tarea -> {
-    // Long cuentaId = tarea.getCuenta() != null ? tarea.getCuenta().getId() : null;
-    // return new TareaDTO(tarea.getId(), tarea.getDescripcion(),
-    // tarea.isCompletada(), cuentaId);
-    // }).collect(Collectors.toList());
-
-    // return ResponseEntity.ok(response);
-    // }
-
-    // @GetMapping("/cuenta/{cuentaId}")
-    // public ResponseEntity<List<TareaDTO>> getTareasByCuentaId(@PathVariable Long
-    // cuentaId) {
-    // List<Tarea> tareas = tareaService.getTareasByCuentaId(cuentaId);
-    // List<TareaDTO> response = tareas.stream().map(tarea ->
-    // new TareaDTO(tarea.getId(), tarea.getDescripcion(), tarea.isCompletada(),
-    // cuentaId)
-    // ).collect(Collectors.toList());
-
-    // return ResponseEntity.ok(response);
-    // }
-
-    // @GetMapping("/{id}")
-    // public ResponseEntity<TareaDTO> getTareaById(@PathVariable Long id) {
-    // Optional<Tarea> tarea = tareaService.getTareaById(id);
-    // return tarea.map(t -> {
-    // Long cuentaId = t.getCuenta() != null ? t.getCuenta().getId() : null;
-    // TareaDTO response = new TareaDTO(t.getId(), t.getDescripcion(),
-    // t.isCompletada(), cuentaId);
-    // return ResponseEntity.ok(response);
-    // }).orElseGet(() -> ResponseEntity.notFound().build());
-    // }
-
-    // @PostMapping("/create")
-    // public ResponseEntity<String> createTarea(@RequestBody Tarea tarea,
-    // HttpServletRequest request) {
-    // String token = extractTokenFromRequest(request);
-    // if (token != null && isUser(token)) {
-    // Optional<Cuenta> cuenta = getCuentaFromToken(token);
-    // if (cuenta.isPresent()) {
-    // tarea.setCuenta(cuenta.get());
-    // Tarea nuevaTarea = tareaService.createTarea(tarea);
-    // return ResponseEntity.ok("Tarea agregada a la cuenta ID " +
-    // nuevaTarea.getCuenta().getId());
-    // }
-    // return ResponseEntity.status(404).build();
-    // } else {
-    // return ResponseEntity.status(403).build();
-    // }
-    // }
-
-    // @PutMapping("/{id}")
-    // public ResponseEntity<String> updateTarea(@PathVariable Long id, @RequestBody
-    // Tarea tarea, HttpServletRequest request) {
-    // String token = extractTokenFromRequest(request);
-    // if (token != null && isUser(token)) {
-    // try {
-    // Tarea tareaActualizada = tareaService.updateTarea(id, tarea);
-    // return ResponseEntity.ok("Tarea ID " + tareaActualizada.getId() + "
-    // actualizada en la cuenta ID " + tareaActualizada.getCuenta().getId());
-    // } catch (RuntimeException e) {
-    // return ResponseEntity.notFound().build();
-    // }
-    // } else {
-    // return ResponseEntity.status(403).build();
-    // }
-    // }
-
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<String> deleteTarea(@PathVariable Long id,
-    // HttpServletRequest request) {
-    // String token = extractTokenFromRequest(request);
-    // if (token != null && isUser(token)) {
-    // tareaService.deleteTarea(id);
-    // return ResponseEntity.ok("Tarea ID " + id + " eliminada");
-    // } else {
-    // return ResponseEntity.status(403).build();
-    // }
-    // }
-
     @GetMapping("/all")
     public ResponseEntity<Map<String, Object>> getAllTareas() {
         List<Tarea> tareas = tareaService.getAllTareas();
@@ -184,7 +102,6 @@ public class TareaController {
             Tarea t = tarea.get();
             Long cuentaId = t.getCuenta() != null ? t.getCuenta().getId() : null;
             TareaDTO response = new TareaDTO(t.getId(), t.getDescripcion(), t.isCompletada(), cuentaId);
-
             result.put("success", true);
             result.put("data", response);
             return ResponseEntity.ok(result);

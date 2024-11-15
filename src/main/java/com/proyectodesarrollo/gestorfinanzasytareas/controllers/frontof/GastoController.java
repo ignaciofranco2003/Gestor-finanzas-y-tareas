@@ -59,92 +59,6 @@ public class GastoController {
         }
     }
 
-    // @GetMapping("/all")
-    // public ResponseEntity<List<GastoDTO>> getAllGastos() {
-    // List<Gasto> gastos = gastoService.getAllGastos();
-    // List<GastoDTO> response = gastos.stream().map(gasto -> {
-    // Long cuentaId = gasto.getCuenta() != null ? gasto.getCuenta().getId() : null;
-    // Long categoriaId = gasto.getCategoria() != null ?
-    // gasto.getCategoria().getId() : null;
-    // return new GastoDTO(gasto.getId(), gasto.getMonto(), gasto.getFecha(),
-    // cuentaId, categoriaId);
-    // }).collect(Collectors.toList());
-
-    // return ResponseEntity.ok(response);
-    // }
-
-    // @GetMapping("/{id}")
-    // public ResponseEntity<GastoDTO> getGastoById(@PathVariable Long id) {
-    // Optional<Gasto> gasto = gastoService.getGastoById(id);
-    // return gasto.map(g -> {
-    // Long cuentaId = g.getCuenta() != null ? g.getCuenta().getId() : null;
-    // Long categoriaId = g.getCategoria() != null ? g.getCategoria().getId() :
-    // null;
-    // GastoDTO response = new GastoDTO(g.getId(), g.getMonto(), g.getFecha(),
-    // cuentaId, categoriaId);
-    // return ResponseEntity.ok(response);
-    // }).orElseGet(() -> ResponseEntity.notFound().build());
-    // }
-
-    // @GetMapping("/cuenta/{cuentaId}")
-    // public ResponseEntity<List<GastoDTO>> getGastosByCuentaId(@PathVariable Long
-    // cuentaId) {
-    // List<Gasto> gastos = gastoService.getGastosByCuentaId(cuentaId);
-    // List<GastoDTO> response = gastos.stream().map(g -> {
-    // Long categoriaId = g.getCategoria() != null ? g.getCategoria().getId() :
-    // null;
-    // return new GastoDTO(g.getId(), g.getMonto(), g.getFecha(), cuentaId,
-    // categoriaId);
-    // }).toList();
-    // return ResponseEntity.ok(response);
-    // }
-
-    // @PostMapping("/create")
-    // public ResponseEntity<String> createGasto(@RequestBody Gasto gasto,
-    // HttpServletRequest request) {
-    // String token = jwtUtilityService.extractTokenFromRequest(request);
-    // if (token != null && jwtUtilityService.isUser(token)) {
-    // Optional<Cuenta> cuenta = getCuentaFromToken(token);
-    // if (cuenta.isPresent()) {
-    // gasto.setCuenta(cuenta.get());
-    // Gasto nuevogasto = gastoService.createGasto(gasto);
-    // return ResponseEntity.ok("Gasto agregado a la cuenta ID " +
-    // nuevogasto.getCuenta().getId());
-    // }
-    // return ResponseEntity.status(404).build();
-    // } else {
-    // return ResponseEntity.status(403).build();
-    // }
-    // }
-
-    // @PutMapping("/{id}")
-    // public ResponseEntity<String> updateGasto(@PathVariable Long id, @RequestBody
-    // Gasto gasto, HttpServletRequest request) {
-    // String token = jwtUtilityService.extractTokenFromRequest(request);
-    // if (token != null && jwtUtilityService.isUser(token)) {
-    // try {
-    // Gasto gastoActualizado = gastoService.updateGasto(id, gasto);
-    // return ResponseEntity.ok("Gasto ID " + gastoActualizado.getId() + "
-    // actualizado en la cuenta ID " + gastoActualizado.getCuenta().getId());
-    // } catch (RuntimeException e) {
-    // return ResponseEntity.notFound().build();
-    // }
-    // } else {
-    // return ResponseEntity.status(403).build();
-    // }
-    // }
-
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<String> deleteGasto(@PathVariable Long id,
-    // HttpServletRequest request) {
-    // String token = jwtUtilityService.extractTokenFromRequest(request);
-    // if (token != null && jwtUtilityService.isUser(token)) {
-    // gastoService.deleteGasto(id);
-    // return ResponseEntity.ok("Gasto ID " + id + " eliminado");
-    // } else {
-    // return ResponseEntity.status(403).build();
-    // }
-    // }
     @GetMapping("/all")
     public ResponseEntity<Map<String, Object>> getAllGastos() {
         List<Gasto> gastos = gastoService.getAllGastos();
@@ -203,10 +117,9 @@ public class GastoController {
             Optional<Cuenta> cuenta = getCuentaFromToken(token);
             if (cuenta.isPresent()) {
                 gasto.setCuenta(cuenta.get());
-                Gasto nuevoGasto = gastoService.createGasto(gasto);
+                gastoService.createGasto(gasto);
                 response.put("success", true);
                 response.put("message", "Gasto creado exitosamente.");
-                response.put("data", nuevoGasto);
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
             }
             response.put("success", false);
@@ -226,10 +139,9 @@ public class GastoController {
         Map<String, Object> response = new HashMap<>();
         if (token != null && jwtUtilityService.isUser(token)) {
             try {
-                Gasto gastoActualizado = gastoService.updateGasto(id, gasto);
+                gastoService.updateGasto(id, gasto);
                 response.put("success", true);
                 response.put("message", "Gasto actualizado exitosamente.");
-                response.put("data", gastoActualizado);
                 return ResponseEntity.ok(response);
             } catch (RuntimeException e) {
                 response.put("success", false);

@@ -67,95 +67,6 @@ public class IngresoController {
         }
     }
 
-    // @GetMapping("/all")
-    // public ResponseEntity<List<IngresoDTO>> getAllIngresos() {
-    // List<Ingreso> ingresos = ingresoService.getAllIngresos();
-    // List<IngresoDTO> response = ingresos.stream().map(ingreso -> {
-    // Long cuentaId = ingreso.getCuenta() != null ? ingreso.getCuenta().getId() :
-    // null;
-    // Long categoriaId = ingreso.getCategoria() != null ?
-    // ingreso.getCategoria().getId() : null;
-    // return new IngresoDTO(ingreso.getId(), ingreso.getMonto(), cuentaId,
-    // categoriaId);
-    // }).collect(Collectors.toList());
-
-    // return ResponseEntity.ok(response);
-    // }
-
-    // @GetMapping("/cuenta/{cuentaId}")
-    // public ResponseEntity<List<IngresoDTO>> getIngresosByCuentaId(@PathVariable
-    // Long cuentaId) {
-    // List<Ingreso> ingresos = ingresoService.getIngresosByCuentaId(cuentaId);
-    // List<IngresoDTO> response = ingresos.stream().map(ingreso -> {
-    // Long categoriaId = ingreso.getCategoria() != null ?
-    // ingreso.getCategoria().getId() : null;
-    // return new IngresoDTO(ingreso.getId(), ingreso.getMonto(), cuentaId,
-    // categoriaId);
-    // }).collect(Collectors.toList());
-
-    // return ResponseEntity.ok(response);
-    // }
-
-    // @GetMapping("/{id}")
-    // public ResponseEntity<IngresoDTO> getIngresoById(@PathVariable Long id) {
-    // Optional<Ingreso> ingreso = ingresoService.getIngresoById(id);
-    // return ingreso.map(i -> {
-    // Long cuentaId = i.getCuenta() != null ? i.getCuenta().getId() : null;
-    // Long categoriaId = i.getCategoria() != null ? i.getCategoria().getId() :
-    // null;
-    // IngresoDTO response = new IngresoDTO(i.getId(), i.getMonto(), cuentaId,
-    // categoriaId);
-    // return ResponseEntity.ok(response);
-    // }).orElseGet(() -> ResponseEntity.notFound().build());
-    // }
-
-    // @PostMapping("/create")
-    // public ResponseEntity<String> createIngreso(@RequestBody Ingreso ingreso,
-    // HttpServletRequest request) {
-    // String token = extractTokenFromRequest(request);
-    // if (token != null && isUser(token)) {
-    // Optional<Cuenta> cuenta = getCuentaFromToken(token);
-    // if (cuenta.isPresent()) {
-    // ingreso.setCuenta(cuenta.get());
-    // Ingreso nuevaIngreso = ingresoService.createIngreso(ingreso);
-    // return ResponseEntity.ok("Ingreso agregado a la cuenta ID " +
-    // nuevaIngreso.getCuenta().getId());
-    // }
-    // return ResponseEntity.status(404).build();
-    // } else {
-    // return ResponseEntity.status(403).build();
-    // }
-    // }
-
-    // @PutMapping("/{id}")
-    // public ResponseEntity<String> updateIngreso(@PathVariable Long id,
-    // @RequestBody Ingreso ingreso, HttpServletRequest request) {
-    // String token = extractTokenFromRequest(request);
-    // if (token != null && isUser(token)) {
-    // try {
-    // Ingreso ingresoActualizado = ingresoService.updateIngreso(id, ingreso);
-    // return ResponseEntity.ok("Ingreso ID " + ingresoActualizado.getId() + "
-    // actualizado en la cuenta ID " + ingresoActualizado.getCuenta().getId());
-    // } catch (RuntimeException e) {
-    // return ResponseEntity.notFound().build();
-    // }
-    // } else {
-    // return ResponseEntity.status(403).build();
-    // }
-    // }
-
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<String> deleteIngreso(@PathVariable Long id,
-    // HttpServletRequest request) {
-    // String token = extractTokenFromRequest(request);
-    // if (token != null && isUser(token)) {
-    // ingresoService.deleteIngreso(id);
-    // return ResponseEntity.ok("Ingreso ID " + id + " eliminado");
-    // } else {
-    // return ResponseEntity.status(403).build();
-    // }
-    // }
-
     @GetMapping("/all")
     public ResponseEntity<Map<String, Object>> getAllIngresos() {
         List<Ingreso> ingresos = ingresoService.getAllIngresos();
@@ -213,10 +124,9 @@ public class IngresoController {
             Optional<Cuenta> cuenta = getCuentaFromToken(token);
             if (cuenta.isPresent()) {
                 ingreso.setCuenta(cuenta.get());
-                Ingreso nuevaIngreso = ingresoService.createIngreso(ingreso);
+                ingresoService.createIngreso(ingreso);
                 response.put("success", true);
                 response.put("message", "Ingreso creado exitosamente.");
-                response.put("data", nuevaIngreso);
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
             }
             response.put("success", false);
@@ -236,10 +146,9 @@ public class IngresoController {
         Map<String, Object> response = new HashMap<>();
         if (token != null && isUser(token)) {
             try {
-                Ingreso ingresoActualizado = ingresoService.updateIngreso(id, ingreso);
+                ingresoService.updateIngreso(id, ingreso);
                 response.put("success", true);
                 response.put("message", "Ingreso actualizado exitosamente.");
-                response.put("data", ingresoActualizado);
                 return ResponseEntity.ok(response);
             } catch (RuntimeException e) {
                 response.put("success", false);
