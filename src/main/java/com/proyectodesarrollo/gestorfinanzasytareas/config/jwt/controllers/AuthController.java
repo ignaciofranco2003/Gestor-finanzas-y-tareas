@@ -45,7 +45,6 @@ public class AuthController {
         if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token ausente o inválido");
         }
-
         try {
             // Valida el token usando tu servicio de JWT
             JWTClaimsSet claims = jwtUtilityService.parseJWT(token);
@@ -75,7 +74,7 @@ public class AuthController {
     
     public String extractTokenFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        System.out.println("Header Authorization: " + header); // Verifica el valor recibido
+        // System.out.println("Header Authorization: " + header); // Verifica el valor recibido
         if (header == null) {
             return null; // No se proporciona encabezado
         }
