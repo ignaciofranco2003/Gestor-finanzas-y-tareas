@@ -112,10 +112,9 @@ public class AhorroController {
             Optional<Cuenta> cuenta = getCuentaFromToken(token);
             if (cuenta.isPresent()) {
                 ahorro.setCuenta(cuenta.get());
-                Ahorro nuevoAhorro = ahorroService.createAhorro(ahorro);
+                ahorroService.createAhorro(ahorro);
                 response.put("success", true);
                 response.put("message", "Ahorro creado exitosamente.");
-                response.put("data", nuevoAhorro);
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
             }
             response.put("success", false);
@@ -134,10 +133,9 @@ public class AhorroController {
         Map<String, Object> response = new HashMap<>();
         if (token != null && jwtUtilityService.isUser(token)) {
             try {
-                Ahorro ahorroActualizado = ahorroService.updateAhorro(id, ahorro);
+                ahorroService.updateAhorro(id, ahorro);
                 response.put("success", true);
                 response.put("message", "Ahorro actualizado exitosamente.");
-                response.put("data", ahorroActualizado);
                 return ResponseEntity.ok(response);
             } catch (RuntimeException e) {
                 response.put("success", false);

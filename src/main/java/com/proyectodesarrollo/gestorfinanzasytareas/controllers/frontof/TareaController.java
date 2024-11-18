@@ -120,10 +120,9 @@ public class TareaController {
             Optional<Cuenta> cuenta = getCuentaFromToken(token);
             if (cuenta.isPresent()) {
                 tarea.setCuenta(cuenta.get());
-                Tarea nuevaTarea = tareaService.createTarea(tarea);
+                tareaService.createTarea(tarea);
                 response.put("success", true);
                 response.put("message", "Tarea creada exitosamente.");
-                response.put("data", nuevaTarea);
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
             }
             response.put("success", false);
@@ -143,10 +142,9 @@ public class TareaController {
         Map<String, Object> response = new HashMap<>();
         if (token != null && isUser(token)) {
             try {
-                Tarea tareaActualizada = tareaService.updateTarea(id, tarea);
+                tareaService.updateTarea(id, tarea);
                 response.put("success", true);
                 response.put("message", "Tarea actualizada exitosamente.");
-                response.put("data", tareaActualizada);
                 return ResponseEntity.ok(response);
             } catch (RuntimeException e) {
                 response.put("success", false);
@@ -178,11 +176,9 @@ public class TareaController {
 
     private String extractTokenFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        System.out.println("Header Authorization: " + header); // Verifica el valor recibido
         if (header == null) {
             return null; // No se proporciona encabezado
         }
-
         if (header.startsWith("Bearer ")) {
             return header.substring(7); // Extrae el token sin "Bearer "
         } else {

@@ -179,7 +179,7 @@ public class IngresoController {
 
     private String extractTokenFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        System.out.println("Header Authorization: " + header); // Verifica el valor recibido
+
         if (header == null) {
             return null; // No se proporciona encabezado
         }

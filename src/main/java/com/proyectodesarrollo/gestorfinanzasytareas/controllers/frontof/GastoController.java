@@ -50,9 +50,7 @@ public class GastoController {
         try {
             JWTClaimsSet claims = jwtUtilityService.parseJWT(token);
             String useremail = claims.getStringClaim("email");
-            System.out.println(useremail);
             User aux = userService.getUserByEmail(useremail);
-            System.out.println(aux.getUsername());
             return cuentaService.findByUserId(aux.getUserid());
         } catch (Exception e) {
             return Optional.empty();
