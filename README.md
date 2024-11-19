@@ -1,2 +1,2 @@
 Compilar el proyecto:
-  mvn clean install
+    - mvn clean install
