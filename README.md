@@ -37,6 +37,9 @@ mvn spring-boot:run
 La aplicación se iniciará usando la configuración definida en `application.properties`.
 
 ## Compilar
+El servidor corre en el puerto 8080:
+
+Para compilar el proyecto, utiliza el siguiente comando:
 
 ```bash
 mvn clean install
