@@ -51,4 +51,4 @@ mvn clean install
 
 Si necesitas ajustar CORS, seguridad o validaciones, revisa los paquetes en `config/jwt` y los controladores de autenticación.
 
-Este proyecto es el backend de https://github.com/ignaciofranco2003/Gestion-finanzas-y-tareas-front
+Este proyecto es el BackEnd de https://github.com/ignaciofranco2003/Gestion-finanzas-y-tareas-front
